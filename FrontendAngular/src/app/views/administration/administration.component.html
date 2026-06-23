@@ -1,0 +1,47 @@
+<div class="view-container">
+  <div class="view-header flex align-items-center gap-2">
+    <i class="pi pi-sliders-h" style="color: var(--app-primary-text, #34d399); font-size: 1rem"></i>
+    <span class="adm-title">Administration</span>
+  </div>
+
+  <div class="adm-body">
+    <!-- Left sidebar -->
+    <nav class="adm-sidebar">
+      <p-panelmenu
+        [model]="menu()"
+        class="adm-panelmenu"
+        [transitionOptions]="'150ms cubic-bezier(0.4,0,0.2,1)'"
+      />
+    </nav>
+
+    <!-- Content area -->
+    <main class="adm-content">
+      @switch (activeView()) {
+        @case ('bill-rules') {
+          <app-admin-bill-rules />
+        }
+        @case ('system-info') {
+          <app-admin-system-info />
+        }
+        @case ('users') {
+          <div class="adm-coming-soon">
+            <i class="pi pi-user"></i>
+            <span>User management — coming soon</span>
+          </div>
+        }
+        @case ('user-roles') {
+          <div class="adm-coming-soon">
+            <i class="pi pi-shield"></i>
+            <span>User roles — coming soon</span>
+          </div>
+        }
+        @default {
+          <div class="adm-empty">
+            <i class="pi pi-arrow-left"></i>
+            <p>Select an item from the menu</p>
+          </div>
+        }
+      }
+    </main>
+  </div>
+</div>

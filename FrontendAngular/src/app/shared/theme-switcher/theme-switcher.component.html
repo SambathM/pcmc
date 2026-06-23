@@ -1,0 +1,38 @@
+<div class="ts-wrap flex align-items-center gap-2">
+  <!-- Dark / light toggle -->
+  <button
+    type="button"
+    class="ts-btn flex align-items-center justify-content-center"
+    (click)="toggleDark()"
+    [title]="isDark() ? 'Switch to light mode' : 'Switch to dark mode'"
+  >
+    <i class="pi" [class.pi-moon]="isDark()" [class.pi-sun]="!isDark()"></i>
+  </button>
+
+  <!-- Primary colour palette -->
+  <button
+    type="button"
+    class="ts-btn ts-btn--accent flex align-items-center justify-content-center"
+    (click)="palettePanel.toggle($event)"
+    title="Primary color"
+  >
+    <i class="pi pi-palette"></i>
+  </button>
+
+  <p-popover #palettePanel appendTo="body">
+    <ng-template #content>
+      <div class="ts-palette">
+        @for (c of primaryColors; track c.name) {
+          <button
+            type="button"
+            class="ts-swatch"
+            [class.ts-swatch--active]="c.name === selectedPrimary()"
+            [style.background]="c.hex"
+            [title]="c.name"
+            (click)="selectPrimary(c); palettePanel.hide()"
+          ></button>
+        }
+      </div>
+    </ng-template>
+  </p-popover>
+</div>

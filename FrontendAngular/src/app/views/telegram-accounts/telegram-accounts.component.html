@@ -1,0 +1,508 @@
+<div class="view-container flex flex-column">
+  <!-- Top header bar (consistent with the locations panel header) -->
+  <div class="view-header flex align-items-center justify-content-between gap-3 flex-shrink-0">
+    <p-inputgroup class="tg-search">
+      <p-inputGroupAddon>
+        <i class="pi pi-search"></i>
+      </p-inputGroupAddon>
+      <input
+        pInputText
+        type="text"
+        placeholder="Search operator accounts..."
+        [(ngModel)]="searchQuery"
+      />
+    </p-inputgroup>
+    <p-button
+      (onClick)="startConnectNew()"
+      icon="pi pi-plus"
+      label="Connect Telegram Account"
+      class="flex-shrink-0"
+    />
+  </div>
+
+  <!-- Scrollable content -->
+  <div class="view-content flex-1 overflow-hidden">
+    <div class="view-card view-card--fill overflow-hidden">
+      <p-table
+        [value]="filteredAccounts"
+        [loading]="isLoadingAccounts"
+        dataKey="id"
+        [scrollable]="true"
+        scrollHeight="flex"
+        styleClass="tg-ptable"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Operator</th>
+            <th style="width:9rem">Status</th>
+            <th class="tg-th--center" style="width:8rem">Properties</th>
+            <th style="width:20rem">Actions</th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-acc>
+          <tr>
+            <!-- Operator (avatar + identity) -->
+            <td>
+              <div class="flex align-items-center gap-3 min-w-0">
+                <div class="tg-avatar-wrap relative flex-shrink-0">
+                  @if (acc.logo) {
+                    <p-avatar [image]="acc.logo" shape="circle" size="normal" />
+                  } @else {
+                    <div
+                      class="tg-avatar-placeholder flex align-items-center justify-content-center"
+                      [ngClass]="getGradient(acc.name)"
+                    >
+                      {{ getInitials(acc.name) }}
+                    </div>
+                  }
+                  <span
+                    class="tg-status-dot absolute"
+                    [class.online]="acc.status === 'Connected'"
+                    [class.offline]="acc.status !== 'Connected'"
+                  ></span>
+                </div>
+
+                <div class="tg-identity min-w-0">
+                  <div class="flex align-items-center gap-2 flex-wrap">
+                    <span class="tg-account-name">{{ acc.name }}</span>
+                    @if (acc.isDefault) {
+                      <span class="tg-default-badge flex-shrink-0">Default</span>
+                    }
+                  </div>
+                  <div class="tg-account-meta flex align-items-center gap-3 flex-wrap">
+                    @if (acc.username) {
+                      <span class="tg-username">{{ acc.username }}</span>
+                    }
+                    @if (acc.phone) {
+                      <span class="tg-phone flex align-items-center gap-1">
+                        <i class="pi pi-phone"></i>{{ acc.phone }}
+                      </span>
+                    }
+                  </div>
+                </div>
+              </div>
+            </td>
+
+            <!-- Status -->
+            <td>
+              @if (acc.status === 'Connected') {
+                <span class="tg-status online inline-flex align-items-center gap-1">
+                  <span class="tg-status-pulse"></span>
+                  Active
+                </span>
+              } @else {
+                <span class="tg-status offline inline-flex align-items-center gap-1">
+                  <span class="tg-status-pulse"></span>
+                  Offline
+                </span>
+              }
+            </td>
+
+            <!-- Properties -->
+            <td class="tg-td--center">
+              <button
+                (click)="
+                  attachedLocationsModal = {
+                    accountName: acc.name,
+                    locationsList: getAttachedLocs(acc),
+                  }
+                "
+                class="tg-locs-btn inline-flex align-items-center gap-1"
+              >
+                <i class="pi pi-building"></i>
+                {{ getAttachedLocs(acc).length }}
+              </button>
+            </td>
+
+            <!-- Actions -->
+            <td>
+              <div class="tg-actions flex align-items-center gap-2 flex-shrink-0">
+                @if (acc.status === 'Connected') {
+                  <button
+                    [disabled]="acc.isDefault"
+                    (click)="handleSetDefault(acc.id)"
+                    class="tg-btn-neutral"
+                  >
+                    Set Default
+                  </button>
+                  <button (click)="handleDisconnect(acc.id)" class="tg-btn-danger">
+                    Disconnect
+                  </button>
+                } @else {
+                  <button (click)="startConnectNew()" class="tg-btn-success">Reconnect</button>
+                }
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="4" class="tg-empty-cell text-center">
+              <i class="pi pi-send tg-empty-icon block"></i>
+              @if (searchQuery) {
+                No accounts match your search.
+              } @else {
+                No Telegram accounts connected. Click "Connect Telegram Account" to get started.
+              }
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+
+  <!-- Attached Locations Dialog -->
+  <p-dialog
+    [visible]="!!attachedLocationsModal"
+    (onHide)="attachedLocationsModal = null"
+    [modal]="true"
+    [draggable]="false"
+    [resizable]="false"
+    [dismissableMask]="true"
+    [closeOnEscape]="true"
+    header="Attached Properties"
+    styleClass="tg-locs-dialog"
+    [style]="{ width: '28rem' }"
+  >
+    @if (attachedLocationsModal) {
+      <p class="tg-modal-subtitle">
+        Assigned operator: <strong>{{ attachedLocationsModal.accountName }}</strong>
+      </p>
+      <div class="tg-locs-list overflow-y-auto">
+        @if (attachedLocationsModal.locationsList.length === 0) {
+          <p class="tg-locs-empty text-center">
+            No properties currently assigned to this operator.
+          </p>
+        } @else {
+          @for (loc of attachedLocationsModal.locationsList; track loc.id) {
+            <div class="tg-loc-item flex align-items-center justify-content-between gap-3">
+              <div class="flex align-items-center gap-3">
+                <div
+                  class="tg-loc-initials flex align-items-center justify-content-center flex-shrink-0"
+                >
+                  {{ loc.name.substring(0, 2).toUpperCase() }}
+                </div>
+                <div>
+                  <span class="tg-loc-name block">{{ loc.name }}</span>
+                  <span class="tg-loc-sub block">{{ loc.residentsCount }} Residents mapped</span>
+                </div>
+              </div>
+              <div class="text-right">
+                <span class="tg-loc-balance block">
+                  ${{ loc.outstandingBalance || 0 | number: '1.0-0' }}
+                </span>
+                <span class="tg-loc-balance-label block">Outstanding Balance</span>
+              </div>
+            </div>
+          }
+        }
+      </div>
+    }
+
+    <ng-template pTemplate="footer">
+      <button (click)="attachedLocationsModal = null" class="tg-btn-neutral">Close</button>
+    </ng-template>
+  </p-dialog>
+
+  <!-- Connect Modal -->
+  <p-dialog
+    [(visible)]="showConnectModal"
+    [modal]="true"
+    [closable]="false"
+    [draggable]="false"
+    [resizable]="false"
+    [showHeader]="false"
+    [dismissableMask]="true"
+    [closeOnEscape]="true"
+    styleClass="tg-connect-dialog"
+    [style]="{ width: '384px' }"
+    [contentStyle]="{ padding: '0' }"
+    [maskStyle]="{ background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(4px)' }"
+    (onHide)="onDialogHide()"
+  >
+    <div class="relative">
+      <!-- Close button -->
+      <p-button
+        icon="pi pi-times"
+        [rounded]="true"
+        [text]="true"
+        severity="secondary"
+        size="small"
+        (onClick)="handleModalClose()"
+        class="tg-dlg-close absolute"
+      />
+
+      <!-- ── Success ── -->
+      @if (connectSuccess) {
+        <div class="tg-dlg-success text-center">
+          <div class="tg-dlg-success-icon flex align-items-center justify-content-center">
+            <i class="pi pi-check"></i>
+          </div>
+          <h4 class="tg-dlg-success-title">Connected!</h4>
+          <p class="tg-dlg-success-text">
+            Your Telegram account is now linked as an active operator.
+          </p>
+        </div>
+
+        <!-- ── QR Flow ── -->
+      } @else if (loginTab === 'qr') {
+        <div class="tg-dlg-qr">
+          @if (qrData && qrStep === 'password') {
+            <!-- 2FA for QR -->
+            <div class="tg-dlg-step text-center">
+              <div class="tg-dlg-icon-circle flex align-items-center justify-content-center">
+                <i class="pi pi-lock"></i>
+              </div>
+              <div>
+                <h3 class="tg-dlg-title">Two-Step Verification</h3>
+                <p class="tg-dlg-subtitle">Enter your Telegram cloud password</p>
+              </div>
+              @if (connectError) {
+                <div class="tg-dlg-error flex align-items-center gap-2">
+                  <i class="pi pi-exclamation-triangle flex-shrink-0"></i>{{ connectError }}
+                </div>
+              }
+              <input
+                type="password"
+                class="tg-dlg-input w-full"
+                placeholder="Cloud Password"
+                [(ngModel)]="qrPassword"
+                (keydown.enter)="handleQrPasswordSubmit()"
+              />
+              <p-button
+                label="SUBMIT"
+                [fluid]="true"
+                [loading]="isConnecting"
+                (onClick)="handleQrPasswordSubmit()"
+              />
+            </div>
+          } @else {
+            <!-- QR display — the frame keeps a fixed size across loading / generated
+                   states so the dialog never resizes when the QR appears. Title, steps
+                   and the refresh button always render (refresh disabled while loading). -->
+            <div class="flex flex-column align-items-center gap-5">
+              <div class="tg-dlg-qr-frame flex align-items-center justify-content-center">
+                @if (qrDataUrl) {
+                  <img [src]="qrDataUrl" alt="Telegram QR Code" class="tg-dlg-qr-img block" />
+                } @else {
+                  <i class="pi pi-spin pi-spinner tg-dlg-qr-spinner"></i>
+                }
+              </div>
+
+              <h3 class="tg-dlg-title text-center">Log in to Telegram by QR Code</h3>
+
+              <div class="tg-dlg-steps w-full">
+                @for (
+                  step of [
+                    { n: '1', text: 'Open Telegram on your phone' },
+                    { n: '2', text: 'Go to Settings → Devices → Add Device' },
+                    { n: '3', text: 'Point your phone at this screen to confirm login' },
+                  ];
+                  track step.n
+                ) {
+                  <div class="tg-dlg-step-row flex align-items-start gap-3">
+                    <span
+                      class="tg-dlg-step-num flex align-items-center justify-content-center flex-shrink-0"
+                      >{{ step.n }}</span
+                    >
+                    <span class="tg-dlg-step-text">{{ step.text }}</span>
+                  </div>
+                }
+              </div>
+
+              <p-button
+                label="Refresh QR Code"
+                icon="pi pi-refresh"
+                [text]="true"
+                severity="secondary"
+                size="small"
+                [disabled]="isLoadingQr"
+                (onClick)="handleFetchQrCode()"
+              />
+            </div>
+          }
+
+          <!-- Bottom links -->
+          <div class="tg-dlg-links flex flex-column align-items-center gap-1">
+            <p-button
+              label="LOG IN BY PHONE NUMBER"
+              [text]="true"
+              size="small"
+              (onClick)="loginTab = 'phone'; connectError = ''; phoneStep = 'idle'"
+            />
+            <p-button label="LOG IN WITH PASSKEY" [text]="true" size="small" />
+          </div>
+        </div>
+
+        <!-- ── Phone Flow ── -->
+      } @else {
+        @if (phoneStep === 'idle') {
+          <div class="tg-dlg-phone flex flex-column align-items-center text-center">
+            <!-- Telegram Logo -->
+            <img src="/logos/telegram.svg" alt="Telegram" class="tg-dlg-logo" />
+
+            <h2 class="tg-dlg-brand">Telegram</h2>
+            <p class="tg-dlg-brand-sub">
+              Please confirm your country code and enter your phone number.
+            </p>
+
+            <div class="tg-dlg-form w-full">
+              <!-- Country selector -->
+              <p-select
+                [(ngModel)]="selectedCountry"
+                [options]="countries"
+                optionLabel="name"
+                [filter]="true"
+                filterBy="name,iso,code"
+                placeholder="Country"
+                class="w-full"
+                panelStyleClass="tg-select-panel"
+              >
+                <ng-template pTemplate="item" let-c>
+                  <div class="flex align-items-center gap-3">
+                    <span class="tg-country-iso text-center">{{ c.iso }}</span>
+                    <span class="flex-1">{{ c.name }}</span>
+                    <span class="tg-country-code">{{ c.code }}</span>
+                  </div>
+                </ng-template>
+              </p-select>
+
+              <!-- Phone number -->
+              <p-inputgroup>
+                <p-inputgroup-addon>{{ selectedCountry.code }}</p-inputgroup-addon>
+                <input
+                  pInputText
+                  type="tel"
+                  class="w-full"
+                  placeholder="Phone number"
+                  [(ngModel)]="newAccountPhone"
+                  (keydown.enter)="handlePhoneSubmit()"
+                />
+              </p-inputgroup>
+
+              <!-- Error -->
+              @if (connectError) {
+                <div class="tg-dlg-error flex align-items-center gap-2">
+                  <i class="pi pi-exclamation-triangle flex-shrink-0"></i>{{ connectError }}
+                </div>
+              }
+
+              <!-- Keep me signed in -->
+              <div
+                class="tg-dlg-checkbox-row flex align-items-center gap-3"
+                (click)="keepSignedIn = !keepSignedIn"
+              >
+                <div
+                  class="tg-dlg-checkbox flex align-items-center justify-content-center flex-shrink-0"
+                  [class.checked]="keepSignedIn"
+                >
+                  @if (keepSignedIn) {
+                    <i class="pi pi-check"></i>
+                  }
+                </div>
+                <span class="tg-dlg-checkbox-label">Keep me signed in</span>
+              </div>
+
+              <!-- NEXT -->
+              <p-button
+                label="NEXT"
+                [fluid]="true"
+                [loading]="isConnecting"
+                (onClick)="handlePhoneSubmit()"
+              />
+            </div>
+
+            <!-- Bottom links -->
+            <div class="tg-dlg-links flex flex-column align-items-center gap-1">
+              <p-button
+                label="LOG IN BY QR CODE"
+                [text]="true"
+                size="small"
+                (onClick)="switchToQrTab()"
+              />
+              <p-button label="LOG IN WITH PASSKEY" [text]="true" size="small" />
+            </div>
+          </div>
+        } @else if (phoneStep === 'code') {
+          <div class="tg-dlg-step">
+            <div class="text-center">
+              <div class="tg-dlg-icon-circle flex align-items-center justify-content-center">
+                <i class="pi pi-comments"></i>
+              </div>
+              <h3 class="tg-dlg-title">Check your phone</h3>
+              <p class="tg-dlg-subtitle">
+                We sent a code to<br />
+                <span class="tg-dlg-phone-val"
+                  >{{ selectedCountry.code }} {{ newAccountPhone }}</span
+                >
+              </p>
+            </div>
+            @if (connectError) {
+              <div class="tg-dlg-error flex align-items-center gap-2">
+                <i class="pi pi-exclamation-triangle flex-shrink-0"></i>{{ connectError }}
+              </div>
+            }
+            <input
+              type="text"
+              class="tg-dlg-input tg-dlg-code-input w-full text-center"
+              placeholder="·····"
+              maxlength="8"
+              [(ngModel)]="verificationCode"
+              (keydown.enter)="handleCodeSubmit()"
+            />
+            <p-button
+              label="NEXT"
+              [fluid]="true"
+              [loading]="isConnecting"
+              (onClick)="handleCodeSubmit()"
+            />
+            <p-button
+              label="← Back"
+              [text]="true"
+              [fluid]="true"
+              size="small"
+              (onClick)="phoneStep = 'idle'; connectError = ''"
+            />
+          </div>
+        } @else if (phoneStep === '2fa') {
+          <div class="tg-dlg-step">
+            <div class="text-center">
+              <div class="tg-dlg-icon-circle flex align-items-center justify-content-center">
+                <i class="pi pi-lock"></i>
+              </div>
+              <h3 class="tg-dlg-title">Two-Step Verification</h3>
+              <p class="tg-dlg-subtitle">Enter your Telegram cloud password</p>
+            </div>
+            @if (connectError) {
+              <div class="tg-dlg-error flex align-items-center gap-2">
+                <i class="pi pi-exclamation-triangle flex-shrink-0"></i>{{ connectError }}
+              </div>
+            }
+            <input
+              type="password"
+              class="tg-dlg-input w-full"
+              placeholder="Cloud Password"
+              [(ngModel)]="twoFaPassword"
+              (keydown.enter)="handle2faSubmit()"
+            />
+            <p-button
+              label="SUBMIT"
+              [fluid]="true"
+              [loading]="isConnecting"
+              (onClick)="handle2faSubmit()"
+            />
+            <p-button
+              label="← Back"
+              [text]="true"
+              [fluid]="true"
+              size="small"
+              (onClick)="phoneStep = 'idle'; connectError = ''"
+            />
+          </div>
+        }
+      }
+    </div>
+  </p-dialog>
+</div>

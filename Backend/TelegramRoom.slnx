@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="TelegramEngine/TelegramEngine.csproj" />
+  <Project Path="TelegramRoom/TelegramRoom.csproj" />
+  <Project Path="Library/Library.csproj" Id="13cdcc95-437c-4d19-bf3c-b6d2f53fe389" />
+</Solution>

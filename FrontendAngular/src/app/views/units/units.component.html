@@ -1,0 +1,326 @@
+<div class="view-container flex flex-column">
+  <!-- Top header bar: location filter + search (left), actions (right) -->
+  <div class="view-header flex align-items-center gap-2 flex-shrink-0">
+    <p-select
+      class="unit-filter"
+      [options]="filterOptions()"
+      [(ngModel)]="locationFilter"
+      optionLabel="name"
+      optionValue="value"
+      placeholder="All Locations"
+    >
+      <ng-template let-opt pTemplate="selectedItem">
+        <span class="unit-loc-selected">
+          {{ opt.name }}
+          @if (opt.code) {
+            <span class="unit-loc-code-inline"> · {{ opt.code }}</span>
+          }
+        </span>
+      </ng-template>
+      <ng-template let-opt pTemplate="item">
+        <div class="unit-loc-opt flex flex-column">
+          <span class="unit-loc-name">{{ opt.name }}</span>
+          @if (opt.code) {
+            <span class="unit-loc-code">{{ opt.code }}</span>
+          }
+        </div>
+      </ng-template>
+    </p-select>
+    <p-inputgroup class="unit-search">
+      <p-inputGroupAddon>
+        <i class="pi pi-search"></i>
+      </p-inputGroupAddon>
+      <input pInputText type="text" placeholder="Search units..." [(ngModel)]="searchQuery" />
+    </p-inputgroup>
+
+    <button
+      (click)="openAddModal()"
+      class="view-action-btn view-action-btn--add flex align-items-center justify-content-center gap-1 flex-shrink-0 ml-auto"
+    >
+      <i class="pi pi-plus"></i>
+      <span>Add New</span>
+    </button>
+    <button
+      (click)="importPanel.toggle($event)"
+      class="view-action-btn flex align-items-center justify-content-center gap-1 flex-shrink-0"
+    >
+      <i class="pi pi-file-import"></i>
+      <span>Import</span>
+      <i class="pi pi-chevron-down view-action-caret"></i>
+    </button>
+
+    <p-popover #importPanel>
+      <div class="view-import-menu flex flex-column">
+        <button
+          class="view-import-item flex align-items-center gap-3"
+          (click)="fileInput.click(); importPanel.hide()"
+        >
+          <i class="pi pi-upload view-import-item-icon"></i>
+          <div class="flex flex-column">
+            <span class="view-import-item-title">Import Excel File</span>
+            <span class="view-import-item-sub">Upload a filled .xlsx template</span>
+          </div>
+        </button>
+        <button
+          class="view-import-item flex align-items-center gap-3"
+          (click)="downloadTemplate(); importPanel.hide()"
+        >
+          <i class="pi pi-download view-import-item-icon"></i>
+          <div class="flex flex-column">
+            <span class="view-import-item-title">Download Template</span>
+            <span class="view-import-item-sub">Get the .xlsx import template</span>
+          </div>
+        </button>
+      </div>
+    </p-popover>
+
+    <input
+      #fileInput
+      type="file"
+      accept=".xlsx,.xls"
+      class="hidden"
+      (change)="onFileSelected($event, fileInput)"
+    />
+  </div>
+
+  <!-- Scrollable content -->
+  <div class="view-content flex-1 overflow-hidden">
+    <div class="view-card view-card--fill overflow-hidden">
+      <p-table
+        [value]="filteredUnits"
+        [loading]="state.unitsLoading()"
+        dataKey="id"
+        [scrollHeight]="'flex'"
+        [scrollable]="true"
+        [paginator]="true"
+        [rows]="15"
+        [rowsPerPageOptions]="[15, 30, 50]"
+        styleClass="unit-ptable"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th style="width: 3rem">#</th>
+            <th>Unit Code</th>
+            <th>Floor</th>
+            <th>Building</th>
+            <th>Location</th>
+            <th>Note</th>
+            <th style="width: 7rem">Actions</th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-unit let-i="rowIndex">
+          <tr>
+            <td>
+              <span class="unit-cell-muted">{{ i + 1 }}</span>
+            </td>
+            <td>
+              <span class="unit-code">{{ unit.code }}</span>
+            </td>
+            <td>
+              <span class="unit-cell-muted">{{ unit.floor || '—' }}</span>
+            </td>
+            <td>
+              <span class="unit-cell-muted">{{ unit.building || '—' }}</span>
+            </td>
+            <td>
+              <span class="unit-cell-val">{{ unit.locationName }}</span>
+            </td>
+            <td>
+              <span class="unit-cell-muted">{{ unit.note || '—' }}</span>
+            </td>
+            <td>
+              <div class="flex align-items-center gap-2">
+                <button
+                  pButton
+                  icon="pi pi-pencil"
+                  pTooltip="Edit Unit"
+                  tooltipPosition="top"
+                  [outlined]="true"
+                  class="unit-btn-edit"
+                  (click)="openEditModal(unit)"
+                ></button>
+                <button
+                  pButton
+                  icon="pi pi-trash"
+                  pTooltip="Delete Unit"
+                  tooltipPosition="top"
+                  [outlined]="true"
+                  class="unit-btn-danger"
+                  (click)="deleteUnit(unit)"
+                ></button>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="7" class="unit-empty text-center">
+              <i class="pi pi-inbox unit-empty-icon block"></i>
+              @if (searchQuery.trim() || locationFilter != null) {
+                No units match your filter.
+              } @else {
+                No units found. Click "Add New" to create one.
+              }
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+
+  <!-- Add / Edit Unit Dialog -->
+  <p-dialog
+    [visible]="showModal()"
+    (visibleChange)="showModal.set($event)"
+    (onHide)="closeModal()"
+    [modal]="true"
+    [draggable]="false"
+    [resizable]="false"
+    [dismissableMask]="true"
+    [closeOnEscape]="true"
+    [header]="editing() ? 'Edit Unit' : 'Add New Unit'"
+    styleClass="unit-dialog"
+    [style]="{ width: '30rem' }"
+  >
+    <div class="unit-form flex flex-column gap-3">
+      <div class="dlg-field">
+        <label class="dlg-label">Location <span class="dlg-req">*</span></label>
+        <p-select
+          [options]="locationOptions()"
+          [(ngModel)]="form.locationId"
+          optionLabel="name"
+          optionValue="value"
+          placeholder="Select location…"
+          styleClass="w-full"
+          appendTo="body"
+        >
+          <ng-template let-opt pTemplate="selectedItem">
+            <span class="unit-loc-selected">
+              {{ opt.name }}
+              @if (opt.code) {
+                <span class="unit-loc-code-inline"> · {{ opt.code }}</span>
+              }
+            </span>
+          </ng-template>
+          <ng-template let-opt pTemplate="item">
+            <div class="unit-loc-opt flex flex-column">
+              <span class="unit-loc-name">{{ opt.name }}</span>
+              @if (opt.code) {
+                <span class="unit-loc-code">{{ opt.code }}</span>
+              }
+            </div>
+          </ng-template>
+        </p-select>
+      </div>
+      <div class="dlg-field">
+        <label class="dlg-label">Unit Code <span class="dlg-req">*</span></label>
+        <input pInputText [(ngModel)]="form.code" placeholder="e.g. D-201" class="w-full" />
+      </div>
+      <div class="flex gap-3">
+        <div class="dlg-field flex-1">
+          <label class="dlg-label">Floor</label>
+          <input pInputText [(ngModel)]="form.floor" placeholder="e.g. 2" class="w-full" />
+        </div>
+        <div class="dlg-field flex-1">
+          <label class="dlg-label">Building</label>
+          <input pInputText [(ngModel)]="form.building" placeholder="e.g. Block D" class="w-full" />
+        </div>
+      </div>
+      <div class="dlg-field">
+        <label class="dlg-label">Note</label>
+        <textarea
+          pTextarea
+          [(ngModel)]="form.note"
+          placeholder="Optional notes…"
+          rows="2"
+          class="w-full"
+        ></textarea>
+      </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+      <button (click)="closeModal()" class="dlg-btn-cancel">Cancel</button>
+      <button
+        (click)="saveUnit()"
+        [disabled]="!form.code.trim() || form.locationId == null || saving()"
+        class="dlg-btn-save inline-flex align-items-center gap-2"
+      >
+        @if (saving()) {
+          <i class="pi pi-spin pi-spinner"></i>
+        }
+        {{ editing() ? 'Save Changes' : 'Create Unit' }}
+      </button>
+    </ng-template>
+  </p-dialog>
+
+  <!-- Import Preview Dialog (full screen) -->
+  <p-dialog
+    [visible]="showPreview()"
+    (visibleChange)="showPreview.set($event)"
+    [modal]="true"
+    [draggable]="false"
+    [resizable]="false"
+    [closeOnEscape]="true"
+    header="Preview Import"
+    styleClass="unit-dialog app-dialog-full"
+  >
+    <div class="unit-preview flex flex-column gap-2">
+      <p class="unit-preview-meta">
+        <i class="pi pi-file-excel"></i>
+        <strong>{{ importFileName() }}</strong> — {{ importRows().length }} row(s). Review before
+        importing. Unknown location codes and existing units are skipped.
+      </p>
+      <div class="view-card unit-preview-table">
+        <p-table
+          [value]="importRows()"
+          styleClass="unit-ptable"
+          [scrollable]="true"
+          scrollHeight="flex"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th style="width: 4rem">#</th>
+              <th>Location Code</th>
+              <th>Unit Code</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-row let-i="rowIndex">
+            <tr>
+              <td>
+                <span class="unit-cell-muted">{{ i + 1 }}</span>
+              </td>
+              <td>
+                <span class="unit-code">{{ row.locationCode || '—' }}</span>
+              </td>
+              <td>
+                <span class="unit-cell-val">{{ row.unitCode || '—' }}</span>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+      <button (click)="closePreview()" class="dlg-btn-cancel">Cancel</button>
+      <button
+        (click)="confirmImport()"
+        [disabled]="importing() || importRows().length === 0"
+        class="dlg-btn-save inline-flex align-items-center gap-2"
+      >
+        @if (importing()) {
+          <i class="pi pi-spin pi-spinner"></i>
+        }
+        Import {{ importRows().length }} Unit(s)
+      </button>
+    </ng-template>
+  </p-dialog>
+
+  <!-- Delete Confirmation -->
+  <p-confirmDialog styleClass="app-confirm-danger" [style]="{ width: '28rem' }" position="top" />
+
+  <!-- Toast -->
+  <p-toast position="top-right" />
+</div>

@@ -1,0 +1,616 @@
+
+.tg-search { width: 20rem; }
+
+
+.tg-th--center { text-align: center !important; }
+.tg-td--center { text-align: center !important; }
+
+.tg-empty-cell { padding: 3rem 0; color: var(--app-slate-500, #64748b); font-size: 0.8125rem; }
+
+// ── Empty state (p-table emptymessage) ───────────────────────────────────────
+.tg-empty-icon { font-size: 2.25rem; opacity: 0.2; margin-bottom: 0.75rem; }
+
+.tg-avatar-placeholder {
+  height: 2.5rem;
+  width: 2.5rem;
+  border-radius: 50%;
+  font-weight: 900;
+  color: #fff;
+  font-size: 0.875rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.tg-grad-indigo  { background: linear-gradient(to bottom right, #6366f1, #7c3aed); }
+.tg-grad-emerald { background: linear-gradient(to bottom right, var(--p-primary-500, #10b981), #0d9488); }
+.tg-grad-purple  { background: linear-gradient(to bottom right, #a855f7, #c026d3); }
+.tg-grad-amber   { background: linear-gradient(to bottom right, #f59e0b, #f97316); }
+.tg-grad-blue    { background: linear-gradient(to bottom right, #3b82f6, #0891b2); }
+
+.tg-status-dot {
+  bottom: -0.125rem;
+  right: -0.125rem;
+  height: 0.75rem;
+  width: 0.75rem;
+  border-radius: 50%;
+  border: 2px solid var(--app-slate-900, #0f172a);
+
+  &.online  { background: var(--p-primary-400, #34d399); }
+  &.offline { background: #f43f5e; }
+}
+
+.tg-account-name {
+  font-weight: 700;
+  color: var(--app-slate-100, #f1f5f9);
+  font-size: 0.875rem;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tg-default-badge {
+  font-size: 0.5625rem;
+  background: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+  padding: 0.125rem 0.375rem;
+  border-radius: 9999px;
+  font-weight: 700;
+  text-transform: uppercase;
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  letter-spacing: 0.03em;
+}
+
+.tg-account-meta { margin-top: 0.125rem; }
+.tg-username { font-size: 0.6875rem; color: var(--app-slate-400, #94a3b8); font-family: monospace; }
+
+.tg-phone {
+  font-size: 0.6875rem;
+  color: var(--app-slate-500, #64748b);
+  font-family: monospace;
+
+  i { font-size: 0.625rem; }
+}
+
+
+.tg-status {
+  font-size: 0.625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+
+  &.online  { color: var(--app-primary-text, #34d399); }
+  &.offline { color: #fb7185; }
+}
+
+.tg-status-pulse {
+  height: 0.375rem;
+  width: 0.375rem;
+  border-radius: 50%;
+}
+
+.tg-status.online .tg-status-pulse {
+  background: var(--p-primary-400, #34d399);
+  animation: tg-pulse 2s ease-in-out infinite;
+}
+
+.tg-status.offline .tg-status-pulse { background: #fb7185; }
+
+@keyframes tg-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.4; }
+}
+
+// ── Action buttons ───────────────────────────────────────────────────────────
+.tg-locs-btn {
+  padding: 0.375rem 0.625rem;
+  border-radius: 0.5rem;
+  font-size: 0.625rem;
+  font-weight: 700;
+  background: var(--app-slate-850, #1e293b);
+  color: var(--app-slate-300, #cbd5e1);
+  border: 1px solid var(--app-slate-700, #334155);
+  cursor: pointer;
+  transition: background 0.15s;
+
+  i { color: #60a5fa; font-size: 0.625rem; }
+
+  &:hover { background: var(--app-slate-700, #334155); }
+}
+
+.tg-btn-neutral {
+  padding: 0.375rem 0.625rem;
+  background: var(--app-slate-850, #1e293b);
+  border: 1px solid var(--app-slate-700, #334155);
+  color: var(--app-slate-300, #cbd5e1);
+  font-size: 0.625rem;
+  font-weight: 700;
+  border-radius: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover:not(:disabled) { background: var(--app-slate-700, #334155); }
+  &:disabled { opacity: 0.3; cursor: not-allowed; }
+}
+
+.tg-btn-danger {
+  padding: 0.375rem 0.625rem;
+  background: rgba(244, 63, 94, 0.1);
+  border: 1px solid rgba(244, 63, 94, 0.2);
+  color: #fb7185;
+  font-size: 0.625rem;
+  font-weight: 700;
+  border-radius: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover { background: rgba(244, 63, 94, 0.2); }
+}
+
+.tg-btn-success {
+  padding: 0.375rem 0.625rem;
+  background: color-mix(in srgb, var(--p-primary-500, #10b981) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--p-primary-500, #10b981) 20%, transparent);
+  color: var(--app-primary-text, #34d399);
+  font-size: 0.625rem;
+  font-weight: 700;
+  border-radius: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover { background: color-mix(in srgb, var(--p-primary-500, #10b981) 20%, transparent); }
+}
+
+// ── Attached Locations dialog (chrome themed globally in styles/_dialog) ──────
+.tg-modal-subtitle {
+  font-size: 0.75rem;
+  color: var(--app-slate-400, #94a3b8);
+  margin: 0 0 1rem;
+
+  strong { color: #60a5fa; }
+}
+
+.tg-locs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-height: 20rem;
+  padding-right: 0.25rem;
+}
+
+.tg-locs-empty { font-size: 0.75rem; color: var(--app-slate-500, #64748b); padding: 1.5rem 0; }
+
+.tg-loc-item {
+  padding: 0.875rem;
+  background: color-mix(in srgb, var(--app-slate-950, #020617) 40%, transparent);
+  border: 1px solid color-mix(in srgb, var(--app-slate-800, #1e293b) 80%, transparent);
+  border-radius: 0.75rem;
+}
+
+.tg-loc-initials {
+  height: 2.75rem;
+  width: 2.75rem;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--p-primary-500, #10b981) 10%, transparent);
+  color: var(--app-primary-text, #34d399);
+  border: 1px solid color-mix(in srgb, var(--p-primary-500, #10b981) 20%, transparent);
+  font-weight: 900;
+  font-size: 0.75rem;
+}
+
+.tg-loc-name { font-weight: 700; color: var(--app-slate-100, #f1f5f9); font-size: 0.75rem; }
+.tg-loc-sub  { font-size: 0.625rem; color: var(--app-slate-500, #64748b); margin-top: 0.125rem; }
+.tg-loc-balance { font-size: 0.75rem; font-weight: 700; color: var(--app-primary-text, #34d399); font-family: monospace; }
+.tg-loc-balance-label { font-size: 0.5625rem; color: var(--app-slate-500, #64748b); }
+
+// ── Connect dialog inner content ─────────────────────────────────────────────
+.tg-dlg-close { top: 0.75rem; right: 0.75rem; z-index: 10; }
+
+.tg-dlg-success {
+  padding: 3rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.tg-dlg-success-icon {
+  width: 5rem;
+  height: 5rem;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--p-primary-500, #10b981) 15%, transparent);
+  border: 2px solid color-mix(in srgb, var(--p-primary-500, #10b981) 40%, transparent);
+  margin: 0 auto;
+
+  i { font-size: 2.25rem; color: var(--app-primary-text, #34d399); }
+}
+
+.tg-dlg-success-title { font-size: 1.125rem; font-weight: 700; color: #fff; margin: 0; }
+
+.tg-dlg-success-text {
+  font-size: 0.875rem;
+  color: var(--app-slate-400, #94a3b8);
+  max-width: 200px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.tg-dlg-qr { padding: 2.5rem 1.5rem 1.75rem; }
+
+.tg-dlg-step {
+  padding: 2rem 1.75rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.tg-dlg-icon-circle {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  background: rgba(99, 102, 241, 0.1);
+  margin: 0 auto 1rem;
+
+  i { font-size: 1.875rem; color: #818cf8; }
+}
+
+.tg-dlg-title { font-size: 1.125rem; font-weight: 700; color: #fff; margin: 0; }
+.tg-dlg-subtitle { font-size: 0.8125rem; color: var(--app-slate-400, #94a3b8); margin: 0.5rem 0 0; line-height: 1.6; }
+
+.tg-dlg-error {
+  padding: 0.5rem 0.75rem;
+  background: rgba(244, 63, 94, 0.1);
+  border: 1px solid rgba(244, 63, 94, 0.2);
+  border-radius: 0.75rem;
+  color: #fb7185;
+  font-size: 0.75rem;
+  text-align: left;
+}
+
+.tg-dlg-input {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.75rem;
+  padding: 0.875rem 1rem;
+  color: #fff;
+  font-size: 0.875rem;
+  box-sizing: border-box;
+
+  &:focus {
+    outline: none;
+    border-color: rgba(99, 102, 241, 0.55);
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+  }
+
+  &::placeholder { color: var(--app-slate-600, #475569); }
+}
+
+.tg-dlg-code-input {
+  font-size: 1.5rem;
+  font-family: monospace;
+  letter-spacing: 0.45em;
+
+  &::placeholder { letter-spacing: normal; color: var(--app-slate-700, #334155); }
+}
+
+.tg-dlg-qr-frame {
+  // Fixed footprint (11rem QR + 0.75rem padding each side) so the dialog does not
+  // resize between the loading spinner and the generated QR code.
+  box-sizing: content-box;
+  width: 11rem;
+  height: 11rem;
+  flex-shrink: 0;
+  padding: 0.75rem;
+  border-radius: 1rem;
+  // Frosted purple glass.
+  background: rgba(139, 92, 246, 0.14);
+  border: 1px solid rgba(167, 139, 250, 0.28);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 30px rgba(124, 58, 237, 0.25);
+}
+
+.tg-dlg-qr-img {
+  width: 11rem;
+  height: 11rem;
+}
+
+.tg-dlg-qr-spinner { font-size: 1.75rem; color: #818cf8; }
+
+.tg-dlg-steps { display: flex; flex-direction: column; gap: 0.875rem; }
+
+.tg-dlg-step-num {
+  height: 1.5rem;
+  width: 1.5rem;
+  border-radius: 50%;
+  background: rgba(99, 102, 241, 0.15);
+  color: #818cf8;
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-top: 0.125rem;
+}
+
+.tg-dlg-step-text { font-size: 0.8125rem; color: var(--app-slate-300, #cbd5e1); line-height: 1.4; }
+
+.tg-dlg-links { margin-top: 1.75rem; }
+
+.tg-dlg-phone { padding: 2rem 1.75rem 1.75rem; }
+
+.tg-dlg-logo { width: 6rem; height: 6rem; margin-bottom: 1.25rem; }
+
+.tg-dlg-brand { font-size: 1.375rem; font-weight: 700; color: #fff; margin: 0 0 0.375rem; }
+
+.tg-dlg-brand-sub {
+  font-size: 0.875rem;
+  color: var(--app-slate-400, #94a3b8);
+  line-height: 1.6;
+  margin: 0 0 1.5rem;
+  max-width: 240px;
+}
+
+.tg-dlg-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  text-align: left;
+}
+
+.tg-country-iso {
+  font-size: 0.625rem;
+  font-family: monospace;
+  color: var(--app-slate-500, #64748b);
+  width: 1.75rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 0.25rem;
+  padding: 0.125rem;
+}
+
+.tg-country-code { font-size: 0.75rem; font-family: monospace; color: var(--app-slate-500, #64748b); }
+
+.tg-dlg-checkbox-row { padding: 0.25rem 0; cursor: pointer; }
+
+.tg-dlg-checkbox {
+  height: 1.25rem;
+  width: 1.25rem;
+  border-radius: 0.375rem;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  background: transparent;
+  transition: background 0.15s, border-color 0.15s;
+
+  &.checked { background: #6366f1; border-color: #6366f1; }
+
+  i { color: #fff; font-size: 0.625rem; }
+}
+
+.tg-dlg-checkbox-label { font-size: 0.8125rem; color: var(--app-slate-300, #cbd5e1); user-select: none; }
+
+.tg-dlg-phone-val { font-weight: 700; color: #fff; font-family: monospace; }
+
+// ── Telegram Connect Dialog ──────────────────────────────────────────────────
+
+.tg-connect-dialog {
+  // This dialog mimics Telegram's own dark UI and stays dark in BOTH app themes.
+  // Pin the scheme-aware tokens to their dark values so descendant text/borders
+  // (which paint with --app-* tokens) don't flip to dark-on-dark in light mode.
+  --app-slate-50: #f8fafc;
+  --app-slate-100: #f1f5f9;
+  --app-slate-200: #e2e8f0;
+  --app-slate-300: #cbd5e1;
+  --app-slate-400: #94a3b8;
+  --app-slate-500: #64748b;
+  --app-slate-600: #475569;
+  --app-slate-700: #334155;
+  --app-slate-800: #1e293b;
+  --app-slate-900: #0f172a;
+  --app-slate-950: #020617;
+  --app-primary-text: var(--p-primary-400, #34d399);
+  --app-rose-text: var(--p-rose-400, #fb7185);
+  --app-amber-text: var(--p-amber-400, #fbbf24);
+  --app-sky-text: var(--p-sky-400, #38bdf8);
+  --app-violet-text: var(--p-violet-400, #a78bfa);
+  --app-blue-text: #bfdbfe;
+
+  &.p-dialog {
+    background: #212121 !important;
+    border: none !important;
+    border-radius: 1.5rem !important;
+    overflow: hidden !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.85) !important;
+    max-width: calc(100vw - 2rem) !important;
+  }
+
+  .p-dialog-content {
+    background: transparent !important;
+    padding: 0 !important;
+    border-radius: 1.5rem !important;
+    overflow: visible !important;
+  }
+
+  // FloatLabel — kept for future use, currently unused
+  .p-floatlabel {
+    width: 100%;
+
+    label {
+      color: var(--app-slate-500, #64748b) !important;
+      background: #212121 !important;
+      padding: 0 4px !important;
+      font-size: 0.75rem !important;
+      transition: color 0.15s !important;
+    }
+
+    &:has(.p-select.p-select-open) label,
+    &:has(.p-select.p-filled) label,
+    &:has(input:focus) label,
+    &:has(input.p-filled) label {
+      color: #818cf8 !important;
+    }
+  }
+
+  // p-select
+  .p-select {
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: var(--app-slate-200, #e2e8f0) !important;
+    border-radius: 0.75rem !important;
+    min-height: 3.25rem !important;
+
+    &:hover { border-color: rgba(255, 255, 255, 0.25) !important; }
+
+    &.p-focus,
+    &.p-select-open {
+      border-color: rgba(99, 102, 241, 0.55) !important;
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2) !important;
+    }
+  }
+
+  .p-select-label {
+    color: var(--app-slate-200, #e2e8f0) !important;
+    padding-top: 0.875rem !important;
+    padding-bottom: 0.875rem !important;
+  }
+
+  .p-select-dropdown { color: var(--app-slate-600, #475569) !important; }
+
+  // Input
+  input.p-inputtext {
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: var(--app-slate-100, #f1f5f9) !important;
+    border-radius: 0.75rem !important;
+    min-height: 3.25rem !important;
+    padding-top: 0.875rem !important;
+    padding-bottom: 0.875rem !important;
+
+    &:hover { border-color: rgba(255, 255, 255, 0.25) !important; }
+
+    &:focus {
+      border-color: rgba(99, 102, 241, 0.55) !important;
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2) !important;
+      outline: none !important;
+    }
+
+    &::placeholder { color: var(--app-slate-600, #475569) !important; }
+  }
+
+  // InputGroup
+  .p-inputgroup {
+    width: 100% !important;
+
+    .p-inputgroupaddon,
+    p-inputgroup-addon {
+      background: rgba(255, 255, 255, 0.06) !important;
+      border: 1px solid rgba(255, 255, 255, 0.15) !important;
+      border-right: none !important;
+      border-radius: 0.75rem 0 0 0.75rem !important;
+      color: var(--app-slate-400, #94a3b8) !important;
+      font-size: 0.9rem;
+      font-family: ui-monospace, monospace !important;
+      padding: 0 1rem !important;
+      min-height: 3.25rem !important;
+    }
+
+    input.p-inputtext {
+      border-left: none !important;
+      border-radius: 0 0.75rem 0.75rem 0 !important;
+    }
+  }
+
+  // Buttons
+  .p-button {
+    border-radius: 0.75rem !important;
+    font-weight: 700 !important;
+
+    &:not(.p-button-text):not(.p-button-outlined):not(.p-button-secondary):not(.p-button-rounded) {
+      background: #6366f1 !important;
+      border-color: #6366f1 !important;
+      color: #fff !important;
+
+      &:hover:not(:disabled) {
+        background: #818cf8 !important;
+        border-color: #818cf8 !important;
+      }
+    }
+
+    &.p-button-text {
+      background: transparent !important;
+      border: none !important;
+    }
+
+    &.p-button-secondary.p-button-text {
+      color: var(--app-slate-400, #94a3b8) !important;
+
+      &:hover {
+        color: var(--app-slate-200, #e2e8f0) !important;
+        background: rgba(255, 255, 255, 0.05) !important;
+      }
+    }
+
+    &:not(.p-button-secondary).p-button-text {
+      color: #818cf8 !important;
+
+      &:hover {
+        color: #a5b4fc !important;
+        background: rgba(99, 102, 241, 0.08) !important;
+      }
+    }
+  }
+}
+
+// ── Country Select Dropdown Panel (body-level overlay) ───────────────────────
+
+.tg-select-panel {
+  background: #1a1a1a !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 0.75rem !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6) !important;
+  overflow: hidden !important;
+  color: var(--app-slate-200, #e2e8f0) !important;
+
+  .p-select-header {
+    background: #1a1a1a !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+    padding: 0.5rem !important;
+  }
+
+  .p-select-filter {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: var(--app-slate-100, #f1f5f9) !important;
+    border-radius: 0.5rem !important;
+    padding: 0.35rem 0.6rem !important;
+    font-size: 0.8rem !important;
+    height: 2rem !important;
+
+    &::placeholder { color: color-mix(in srgb, var(--app-slate-400, #94a3b8) 50%, transparent) !important; }
+  }
+
+  .p-select-list-container { background: transparent !important; }
+
+  .p-select-list {
+    background: transparent !important;
+    padding: 0.25rem !important;
+  }
+
+  .p-select-option {
+    background: transparent !important;
+    color: var(--app-slate-300, #cbd5e1) !important;
+    border-radius: 0.5rem !important;
+    padding: 0.5rem 0.75rem !important;
+
+    &:hover,
+    &.p-focus {
+      background: rgba(255, 255, 255, 0.05) !important;
+      color: var(--app-slate-100, #f1f5f9) !important;
+    }
+
+    &.p-select-option-selected {
+      background: rgba(99, 102, 241, 0.15) !important;
+      color: #818cf8 !important;
+
+      &:hover { background: rgba(99, 102, 241, 0.25) !important; }
+    }
+  }
+}

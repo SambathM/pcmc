@@ -1,0 +1,12 @@
+@if (notice; as n) {
+  <div
+    class="conn-banner flex align-items-center justify-content-center gap-2"
+    [class.conn-banner--error]="n.severity === 'error'"
+    [class.conn-banner--warn]="n.severity === 'warn'"
+    role="status"
+    aria-live="polite"
+  >
+    <i class="pi {{ n.icon }}" [class.pi-spin]="n.icon === 'pi-sync'"></i>
+    <span>{{ n.text }}</span>
+  </div>
+}

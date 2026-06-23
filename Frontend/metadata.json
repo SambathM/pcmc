@@ -1,0 +1,6 @@
+{
+  "name": "UK CONDO",
+  "description": "Property Collection Management System. An internal enterprise management system used by property management companies to manage residents, accounts receivable, and payment collection activities through Telegram.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

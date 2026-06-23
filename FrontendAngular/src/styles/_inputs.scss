@@ -1,0 +1,172 @@
+// ── PrimeNG Input / Select / Datepicker / Autocomplete dark overrides ────────
+
+.p-inputtext,
+.p-textarea,
+.p-inputnumber-input,
+.p-password input {
+  background: var(--app-input-bg, #0f172a) !important;
+  border-color: var(--app-input-border, #334155) !important;
+  color: var(--app-slate-200, #e2e8f0) !important;
+  // font-size: 0.87rem;
+  padding: 0.4rem 0.625rem !important;
+
+  &::placeholder { font-size: 0.87rem; }
+}
+
+.p-select,
+.p-datepicker-input {
+  background: var(--app-input-bg, #0f172a) !important;
+  border-color: var(--app-input-border, #334155) !important;
+  color: var(--app-slate-200, #e2e8f0) !important;
+  font-size: 0.87rem !important;
+}
+
+// Select height is driven by its inner label padding.
+.p-select-label {
+  padding: 0.4rem 0.625rem !important;
+  color: var(--app-slate-200, #e2e8f0) !important;
+  font-size: 0.87rem !important;
+
+  &.p-placeholder {
+    color: var(--app-slate-500, #64748b) !important;
+    font-size: 0.87rem !important;
+  }
+}
+
+.p-select-overlay,
+.p-datepicker-panel,
+.p-autocomplete-overlay {
+  background: var(--app-slate-800, #1e293b) !important;
+  border-color: var(--app-slate-700, #334155) !important;
+  font-size: 0.87rem !important;
+}
+
+// Uniform control height. (Textareas use .p-textarea, not .p-inputtext, so
+// they're unaffected and keep their own min-height.)
+.p-inputtext,
+.p-select,
+.p-datepicker-input,
+.p-datepicker-dropdown,
+.p-inputnumber-input,
+.p-autocomplete-input {
+  min-height: 35px !important;
+}
+
+// Wrapper components (inputnumber / autocomplete / datepicker) only widen their
+// host via styleClass="w-full"; the inner <input> keeps its intrinsic width and
+// ignores fixed column widths. Force host + inner input to fill the container.
+.p-inputnumber,
+.p-autocomplete,
+.p-datepicker {
+  display: flex !important;
+  width: 100% !important;
+}
+
+.p-inputnumber-input,
+.p-autocomplete-input,
+.p-datepicker-input {
+  width: 100% !important;
+  flex: 1 1 auto;
+}
+
+// Calendar icon button ([showIcon]) — blend it with the input instead of the
+// default outlined button look.
+.p-datepicker-dropdown {
+  background: var(--app-input-bg, #0f172a) !important;
+  border: 1px solid var(--app-input-border, #334155) !important;
+  border-left: none !important;
+  color: var(--app-slate-500, #64748b) !important;
+  box-shadow: none !important;
+
+  &:hover {
+    background: color-mix(in srgb, var(--p-primary-500, #10b981) 10%, transparent) !important;
+    color: var(--app-primary-text, #6ee7b7) !important;
+  }
+
+  &:focus,
+  &:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+  }
+}
+
+// ── Datepicker panel internals (overlay is at <body>, outside .app-dark) ─────
+.p-datepicker-header {
+  background: transparent !important;
+  color: var(--app-slate-200, #e2e8f0) !important;
+  border-color: var(--app-slate-700, #334155) !important;
+}
+
+.p-datepicker-title,
+.p-datepicker-select-month,
+.p-datepicker-select-year,
+.p-datepicker-prev-button,
+.p-datepicker-next-button {
+  color: var(--app-slate-200, #e2e8f0) !important;
+}
+
+.p-datepicker-select-month:hover,
+.p-datepicker-select-year:hover,
+.p-datepicker-prev-button:hover,
+.p-datepicker-next-button:hover {
+  background: color-mix(in srgb, var(--p-primary-500, #10b981) 10%, transparent) !important;
+  color: var(--app-primary-text, #6ee7b7) !important;
+}
+
+.p-datepicker-weekday {
+  color: var(--app-slate-500, #64748b) !important;
+}
+
+.p-datepicker-day {
+  color: var(--app-slate-300, #cbd5e1) !important;
+
+  &:not(.p-disabled):hover {
+    background: color-mix(in srgb, var(--p-primary-500, #10b981) 10%, transparent) !important;
+    color: var(--app-primary-text, #6ee7b7) !important;
+  }
+}
+
+.p-datepicker-day-selected {
+  background: var(--p-primary-500, #10b981) !important;
+  color: var(--app-slate-950, #020617) !important;
+}
+
+.p-datepicker-today > .p-datepicker-day:not(.p-datepicker-day-selected) {
+  background: color-mix(in srgb, var(--app-slate-700, #334155) 60%, transparent) !important;
+  color: var(--app-slate-100, #f1f5f9) !important;
+}
+
+// Month / year picker views
+.p-datepicker-month,
+.p-datepicker-year {
+  color: var(--app-slate-300, #cbd5e1) !important;
+
+  &:not(.p-disabled):hover {
+    background: color-mix(in srgb, var(--p-primary-500, #10b981) 10%, transparent) !important;
+    color: var(--app-primary-text, #6ee7b7) !important;
+  }
+}
+
+.p-select-option,
+.p-autocomplete-option {
+  color: var(--app-slate-200, #e2e8f0) !important;
+
+  // Keyboard-highlighted (.p-focus) + pointer hover share the same dark tint.
+  // Without this, .p-focus falls back to the light-theme white highlight,
+  // because the overlay is appended to <body>, outside the .app-dark scope.
+  &.p-focus,
+  &:not(.p-disabled):hover {
+    background: color-mix(in srgb, var(--p-primary-500, #10b981) 10%, transparent) !important;
+    color: var(--app-primary-text, #6ee7b7) !important;
+  }
+
+  &.p-select-option-selected,
+  &.p-autocomplete-option-selected {
+    background: color-mix(in srgb, var(--p-primary-500, #10b981) 15%, transparent) !important;
+    color: var(--app-primary-text, #6ee7b7) !important;
+
+    &.p-focus {
+      background: color-mix(in srgb, var(--p-primary-500, #10b981) 22%, transparent) !important;
+    }
+  }
+}

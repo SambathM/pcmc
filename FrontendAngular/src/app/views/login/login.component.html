@@ -1,0 +1,83 @@
+<div class="login-wrap relative">
+    <!-- Logo -->
+    <div class="login-brand text-center">
+      <div class="login-logo inline-flex align-items-center justify-content-center">
+        <i class="pi pi-building"></i>
+      </div>
+      <h1 class="login-title m-0">UK CONDO</h1>
+      <p class="login-subtitle m-0">Property Collection Management</p>
+    </div>
+
+    <!-- Card -->
+    <div class="login-card overflow-hidden">
+      <div class="login-card-accent"></div>
+      <div class="login-card-body">
+        <p class="login-lead">Sign in to access the internal portal.</p>
+
+        @if (error()) {
+          <div class="login-error flex align-items-start gap-2">
+            <i class="pi pi-exclamation-circle flex-shrink-0"></i>
+            <span>{{ error() }}</span>
+          </div>
+        }
+
+        <div class="login-fields flex flex-column gap-3">
+          <!-- Username -->
+          <div class="login-field">
+            <label class="login-label">Username</label>
+            <div class="login-input-wrap relative">
+              <i class="pi pi-user login-input-icon"></i>
+              <input
+                type="text"
+                [(ngModel)]="username"
+                (keyup.enter)="handleSubmit()"
+                placeholder="Employee ID or username"
+                autocomplete="username"
+                class="login-input login-input--icon w-full"
+              />
+            </div>
+          </div>
+
+          <!-- Password -->
+          <div class="login-field">
+            <label class="login-label">Password</label>
+            <div class="login-input-wrap relative">
+              <i class="pi pi-lock login-input-icon"></i>
+              <input
+                [type]="showPassword() ? 'text' : 'password'"
+                [(ngModel)]="password"
+                (keyup.enter)="handleSubmit()"
+                placeholder="Enter your password"
+                autocomplete="current-password"
+                class="login-input login-input--icon login-input--toggle w-full"
+              />
+              <button
+                type="button"
+                (click)="showPassword.set(!showPassword())"
+                class="login-toggle"
+              >
+                <i [class]="'pi ' + (showPassword() ? 'pi-eye-slash' : 'pi-eye')"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Submit -->
+          <button
+            (click)="handleSubmit()"
+            [disabled]="loading()"
+            class="login-submit w-full flex align-items-center justify-content-center gap-2"
+          >
+            @if (loading()) {
+              <span class="login-spinner"></span>
+              <span>Verifying…</span>
+            } @else {
+              <span>Sign In</span>
+              <i class="pi pi-arrow-right"></i>
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <p class="login-footer text-center">© 2026 UK CONDO — Authorized personnel only</p>
+</div>

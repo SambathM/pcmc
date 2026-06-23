@@ -1,0 +1,46 @@
+:host {
+  display: block;
+}
+
+.abr-card {
+  max-width: 48rem;
+}
+
+.abr-dot {
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+
+  &--amber {
+    background: var(--p-amber-400, #fbbf24);
+  }
+  &--rose {
+    background: var(--p-rose-400, #fb7185);
+  }
+}
+
+.abr-save-btn {
+  margin-left: auto;
+  padding: 0.375rem 1rem;
+  border-radius: 0.5rem;
+  background: var(--p-primary-500, #10b981);
+  color: var(--app-slate-950, #020617);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  transition: background 0.15s;
+
+  &:hover:not(:disabled) {
+    background: var(--p-primary-400, #34d399);
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}

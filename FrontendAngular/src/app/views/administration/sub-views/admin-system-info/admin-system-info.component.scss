@@ -1,0 +1,39 @@
+:host { display: block; }
+
+.asi-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.asi-copy-btn {
+  flex-shrink: 0;
+  padding: 0.375rem;
+  border-radius: 0.375rem;
+  background: var(--app-slate-700, #334155);
+  border: 1px solid var(--app-slate-600, #475569);
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover { background: var(--app-slate-600, #475569); }
+}
+
+.asi-pulse-dot {
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--p-primary-400, #34d399);
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  flex-shrink: 0;
+
+  &--sm { width: 0.375rem; height: 0.375rem; }
+}
+
+.asi-status-dot {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  background: var(--p-primary-400, #34d399);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--p-primary-400, #34d399) 60%, transparent);
+}

@@ -1,0 +1,95 @@
+<div class="asi-stack">
+
+  <!-- Handshake + Intervals row -->
+  <div class="grid grid-cols-2 gap-5">
+    <!-- Handshake Endpoint -->
+    <div class="bg-slate-800 border border-slate-700 rounded-xl p-5">
+      <div class="flex items-center gap-2" style="margin-bottom:0.75rem">
+        <i class="pi pi-wifi text-sky-400"></i>
+        <span class="text-slate-200 font-semibold" style="font-size:0.875rem">Handshake Router URL</span>
+      </div>
+      <div class="bg-slate-900 border border-slate-700 rounded-lg p-3 flex items-center justify-between gap-3" style="margin-bottom:0.75rem">
+        <code class="text-sky-400 text-xs font-mono break-all">https://api.uk313.cloud/handshake</code>
+        <button
+          class="asi-copy-btn"
+          (click)="copyToClipboard('https://api.uk313.cloud/handshake')"
+          title="Copy URL"
+        >
+          <i class="pi pi-copy text-slate-400" style="font-size:0.75rem"></i>
+        </button>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="asi-pulse-dot"></span>
+        <span class="text-emerald-400 text-xs">Endpoint reachable</span>
+      </div>
+    </div>
+
+    <!-- Transmission Intervals -->
+    <div class="bg-slate-800 border border-slate-700 rounded-xl p-5">
+      <div class="flex items-center gap-2" style="margin-bottom:0.75rem">
+        <i class="pi pi-clock" style="color:var(--p-violet-400,#a78bfa)"></i>
+        <span class="text-slate-200 font-semibold" style="font-size:0.875rem">Transmission Intervals</span>
+      </div>
+      @for (interval of transmissionIntervals; track interval.label) {
+        <div class="flex items-center justify-between py-1" style="border-bottom:1px solid color-mix(in srgb,var(--app-slate-700,#334155) 50%,transparent)">
+          <div class="flex items-center gap-2">
+            <i [class]="interval.icon + ' text-slate-500'" style="font-size:0.75rem"></i>
+            <span class="text-slate-400 text-xs">{{ interval.label }}</span>
+          </div>
+          <span class="text-slate-200 text-xs font-mono font-semibold">{{ interval.value }}</span>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- System Diagnostics -->
+  <div class="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
+    <div class="px-5 py-3 border-b border-slate-700 flex items-center gap-2">
+      <i class="pi pi-desktop text-emerald-400"></i>
+      <span class="text-slate-200 font-semibold" style="font-size:0.875rem">System Diagnostics</span>
+      <span class="ml-auto text-slate-500" style="font-size:0.6875rem">All systems operational</span>
+    </div>
+    <div class="p-5 grid grid-cols-1 gap-4">
+      @for (diag of diagnostics; track diag.label) {
+        <div class="bg-slate-900 border border-slate-700 rounded-xl p-4 flex items-start gap-3">
+          <div class="asi-status-dot" style="margin-top:0.125rem;flex-shrink:0"></div>
+          <div>
+            <div class="text-slate-100 font-semibold" style="font-size:0.875rem;margin-bottom:0.125rem">{{ diag.label }}</div>
+            <div class="text-slate-500" style="font-size:0.75rem">{{ diag.description }}</div>
+            <div class="flex items-center gap-1" style="margin-top:0.5rem">
+              <span class="asi-pulse-dot asi-pulse-dot--sm"></span>
+              <span class="text-emerald-400" style="font-size:0.75rem;font-weight:600">{{ diag.statusText }}</span>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Footer info bar -->
+  <div class="bg-slate-800 border border-slate-700 rounded-xl p-4">
+    <div class="flex flex-wrap gap-5 items-center">
+      <div class="flex items-center gap-2">
+        <span class="text-slate-600" style="font-size:0.75rem">System</span>
+        <span class="text-slate-400 font-semibold" style="font-size:0.75rem">PCMC v2.0</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="text-slate-600" style="font-size:0.75rem">Region</span>
+        <span class="text-slate-400 font-semibold" style="font-size:0.75rem">UK / Europe</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="text-slate-600" style="font-size:0.75rem">Stack</span>
+        <span class="text-slate-400 font-semibold" style="font-size:0.75rem">Angular 20 + ASP.NET Core</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="text-slate-600" style="font-size:0.75rem">Broker</span>
+        <span class="text-slate-400 font-semibold" style="font-size:0.75rem">Telegram MTProto</span>
+      </div>
+      <div class="flex items-center gap-1 ml-auto">
+        <span class="asi-pulse-dot"></span>
+        <span class="text-emerald-400 font-semibold" style="font-size:0.75rem">All Systems Online</span>
+      </div>
+    </div>
+  </div>
+
+</div>

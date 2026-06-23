@@ -1,0 +1,306 @@
+<div class="min-h-screen bg-slate-900 p-6">
+  <!-- Header -->
+  <div class="mb-6 flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-bold text-slate-100">Message Center</h1>
+      <p class="text-slate-400 text-sm mt-1">View and manage queued reminder messages</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <span
+        class="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20"
+      >
+        {{ pendingCount() }} pending
+      </span>
+      <span
+        class="px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/20"
+      >
+        {{ failedCount() }} failed
+      </span>
+    </div>
+  </div>
+
+  <!-- Main Layout: Table + Preview -->
+  <div class="flex gap-5 h-[calc(100vh-200px)]">
+    <!-- Left: Table -->
+    <div class="flex-1 flex flex-col min-w-0">
+      <!-- Filters -->
+      <div
+        class="bg-slate-800 border border-slate-700 rounded-xl p-4 mb-4 flex flex-wrap gap-3 items-center"
+      >
+        <p-inputgroup class="flex-1 min-w-[180px]">
+          <p-inputGroupAddon>
+            <i class="pi pi-search text-slate-400 text-xs"></i>
+          </p-inputGroupAddon>
+          <input
+            pInputText
+            type="text"
+            [(ngModel)]="searchQuery"
+            placeholder="Search messages..."
+          />
+        </p-inputgroup>
+        <p-select
+          [options]="locationOptions()"
+          [(ngModel)]="selectedLocationFilter"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="All Locations"
+          [showClear]="true"
+          styleClass="min-w-[160px] bg-slate-700 border-slate-600 text-slate-100"
+        />
+        <p-select
+          [options]="statusFilterOptions"
+          [(ngModel)]="selectedStatusFilter"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="All Statuses"
+          [showClear]="true"
+          styleClass="min-w-[140px] bg-slate-700 border-slate-600 text-slate-100"
+        />
+      </div>
+
+      <!-- Table -->
+      <div
+        class="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden flex-1 flex flex-col"
+      >
+        <div class="overflow-auto flex-1">
+          <table class="w-full">
+            <thead class="sticky top-0 z-10">
+              <tr class="border-b border-slate-700 bg-slate-900">
+                <th
+                  class="text-left text-slate-400 text-xs font-semibold uppercase tracking-wider px-4 py-3"
+                >
+                  Resident
+                </th>
+                <th
+                  class="text-left text-slate-400 text-xs font-semibold uppercase tracking-wider px-4 py-3"
+                >
+                  Unit
+                </th>
+                <th
+                  class="text-left text-slate-400 text-xs font-semibold uppercase tracking-wider px-4 py-3"
+                >
+                  Telegram
+                </th>
+                <th
+                  class="text-left text-slate-400 text-xs font-semibold uppercase tracking-wider px-4 py-3"
+                >
+                  Service
+                </th>
+                <th
+                  class="text-left text-slate-400 text-xs font-semibold uppercase tracking-wider px-4 py-3"
+                >
+                  Amount
+                </th>
+                <th
+                  class="text-left text-slate-400 text-xs font-semibold uppercase tracking-wider px-4 py-3"
+                >
+                  Due Date
+                </th>
+                <th
+                  class="text-left text-slate-400 text-xs font-semibold uppercase tracking-wider px-4 py-3"
+                >
+                  Offset
+                </th>
+                <th
+                  class="text-left text-slate-400 text-xs font-semibold uppercase tracking-wider px-4 py-3"
+                >
+                  Status
+                </th>
+                <th
+                  class="text-left text-slate-400 text-xs font-semibold uppercase tracking-wider px-4 py-3"
+                >
+                  Timestamp
+                </th>
+                <th
+                  class="text-left text-slate-400 text-xs font-semibold uppercase tracking-wider px-4 py-3"
+                >
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              @if (filteredMessages().length === 0) {
+                <tr>
+                  <td colspan="10" class="text-center text-slate-500 py-12">
+                    <i class="pi pi-inbox text-4xl mb-3 block text-slate-600"></i>
+                    No messages found
+                  </td>
+                </tr>
+              }
+              @for (msg of filteredMessages(); track msg.id) {
+                <tr
+                  class="border-b border-slate-700/50 cursor-pointer transition-colors"
+                  [class]="
+                    selectedItem()?.id === msg.id
+                      ? 'bg-emerald-500/10 border-l-2 border-l-emerald-400'
+                      : 'hover:bg-slate-700/30'
+                  "
+                  (click)="selectItem(msg)"
+                >
+                  <td class="px-4 py-3">
+                    <div class="text-slate-100 text-sm font-medium">{{ msg.residentName }}</div>
+                    <div class="text-slate-500 text-xs">{{ msg.residentCode }}</div>
+                  </td>
+                  <td class="px-4 py-3">
+                    <span
+                      class="text-slate-300 text-sm font-mono bg-slate-700/50 px-2 py-0.5 rounded"
+                      >{{ msg.unit }}</span
+                    >
+                  </td>
+                  <td class="px-4 py-3">
+                    <div class="flex items-center gap-1.5">
+                      <i class="pi pi-telegram text-sky-400 text-xs"></i>
+                      <span class="text-sky-400 text-xs">{{ msg.telegram }}</span>
+                    </div>
+                  </td>
+                  <td class="px-4 py-3">
+                    <span class="text-slate-300 text-sm">{{ msg.service }}</span>
+                  </td>
+                  <td class="px-4 py-3">
+                    <span class="text-emerald-400 text-sm font-semibold"
+                      >£{{ msg.amount | number: '1.2-2' }}</span
+                    >
+                  </td>
+                  <td class="px-4 py-3">
+                    <span class="text-slate-400 text-xs font-mono">{{ msg.dueDate }}</span>
+                  </td>
+                  <td class="px-4 py-3">
+                    <span
+                      class="text-slate-400 text-xs bg-slate-700/50 px-2 py-0.5 rounded font-mono"
+                      >{{ msg.offsetType }}</span
+                    >
+                  </td>
+                  <td class="px-4 py-3">
+                    <span
+                      [class]="getStatusClass(msg.status)"
+                      class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold border"
+                    >
+                      <span
+                        [class]="getStatusDotClass(msg.status)"
+                        class="w-1.5 h-1.5 rounded-full"
+                      ></span>
+                      {{ msg.status }}
+                    </span>
+                  </td>
+                  <td class="px-4 py-3">
+                    <span class="text-slate-500 text-xs font-mono">{{
+                      formatTimestamp(msg.timestamp)
+                    }}</span>
+                  </td>
+                  <td class="px-4 py-3" (click)="$event.stopPropagation()">
+                    <div class="flex items-center gap-1.5">
+                      @if (msg.status === 'Pending' || msg.status === 'Failed') {
+                        <button
+                          pButton
+                          icon="pi pi-check"
+                          pTooltip="Mark as Sent"
+                          tooltipPosition="top"
+                          class="p-button-sm p-button-outlined border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/10"
+                          (click)="markSent(msg)"
+                        ></button>
+                      }
+                      <button
+                        pButton
+                        icon="pi pi-trash"
+                        pTooltip="Delete"
+                        tooltipPosition="top"
+                        class="p-button-sm p-button-outlined border-rose-500/40 text-rose-400 hover:bg-rose-500/10"
+                        (click)="deleteMessage(msg)"
+                      ></button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <!-- Footer -->
+        <div class="px-4 py-3 border-t border-slate-700 flex items-center justify-between shrink-0">
+          <span class="text-slate-500 text-xs">{{ filteredMessages().length }} messages</span>
+          <span class="text-slate-500 text-xs">Click a row to preview message text</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Preview Panel -->
+    <div class="w-80 shrink-0">
+      <div class="bg-slate-800 border border-slate-700 rounded-xl h-full flex flex-col">
+        <div class="px-4 py-3 border-b border-slate-700 flex items-center gap-2">
+          <i class="pi pi-eye text-emerald-400"></i>
+          <h3 class="text-slate-100 font-semibold text-sm">Message Preview</h3>
+        </div>
+        @if (selectedItem()) {
+          <div class="p-4 flex-1 overflow-auto">
+            <!-- Recipient Info -->
+            <div class="mb-4 p-3 bg-slate-900/60 rounded-lg border border-slate-700">
+              <div class="flex items-center gap-2 mb-2">
+                <div
+                  class="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center"
+                >
+                  <span class="text-emerald-400 text-xs font-semibold">{{
+                    getInitials(selectedItem()!.residentName)
+                  }}</span>
+                </div>
+                <div>
+                  <div class="text-slate-100 text-sm font-medium">
+                    {{ selectedItem()!.residentName }}
+                  </div>
+                  <div class="text-slate-500 text-xs">Unit {{ selectedItem()!.unit }}</div>
+                </div>
+              </div>
+              <div class="flex items-center gap-1.5 mt-2">
+                <i class="pi pi-telegram text-sky-400 text-xs"></i>
+                <span class="text-sky-400 text-xs">{{ selectedItem()!.telegram }}</span>
+              </div>
+            </div>
+
+            <!-- Meta badges -->
+            <div class="flex flex-wrap gap-2 mb-4">
+              <span
+                [class]="getStatusClass(selectedItem()!.status)"
+                class="px-2 py-0.5 rounded-full text-xs font-semibold border"
+              >
+                {{ selectedItem()!.status }}
+              </span>
+              <span
+                class="px-2 py-0.5 rounded-full text-xs bg-slate-700 text-slate-300 border border-slate-600"
+              >
+                {{ selectedItem()!.offsetType }}
+              </span>
+              <span
+                class="px-2 py-0.5 rounded-full text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+              >
+                £{{ selectedItem()!.amount | number: '1.2-2' }}
+              </span>
+            </div>
+
+            <!-- Message Text -->
+            <div>
+              <label class="block text-slate-400 text-xs mb-2 uppercase tracking-wider"
+                >Message Text</label
+              >
+              <div
+                class="bg-slate-900/80 border border-slate-700 rounded-lg p-3 text-slate-300 text-sm leading-relaxed whitespace-pre-wrap font-mono"
+              >
+                {{ selectedItem()!.text }}
+              </div>
+            </div>
+
+            <!-- Timestamp -->
+            <div class="mt-4 pt-3 border-t border-slate-700">
+              <div class="flex items-center gap-2 text-xs text-slate-500">
+                <i class="pi pi-clock"></i>
+                <span>{{ selectedItem()!.timestamp }}</span>
+              </div>
+            </div>
+          </div>
+        } @else {
+          <div class="flex-1 flex flex-col items-center justify-center text-center p-6">
+            <i class="pi pi-comment text-4xl text-slate-600 mb-3"></i>
+            <p class="text-slate-500 text-sm">Select a message row to preview its content here</p>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

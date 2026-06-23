@@ -1,0 +1,696 @@
+<div class="loc-container">
+  <!-- LEFT SIDEBAR -->
+  <div class="loc-sidebar">
+    <!-- Search + Add -->
+    <div class="loc-sidebar-header">
+      <p-inputgroup class="flex-1">
+        <p-inputGroupAddon>
+          <i class="pi pi-search"></i>
+        </p-inputGroupAddon>
+        <input
+          pInputText
+          type="text"
+          placeholder="Search properties..."
+          [(ngModel)]="condoSearchQuery"
+        />
+      </p-inputgroup>
+      <button
+        (click)="openAddModal()"
+        title="Add Property"
+        class="loc-add-btn flex-shrink-0 flex align-items-center justify-content-center"
+      >
+        <i class="pi pi-plus"></i>
+      </button>
+    </div>
+
+    <!-- Property list -->
+    <div class="loc-list">
+      @if (filteredCondos.length === 0) {
+        <div class="loc-empty">No properties match your filter.</div>
+      } @else {
+        @for (loc of filteredCondos; track loc.id) {
+          @let isActive = state.selectedLocation() === loc.name;
+          <div class="loc-card relative" [class.loc-card--active]="isActive">
+            <div (click)="handleSelectCondo(loc.name)" class="loc-card-body">
+              <div class="flex align-items-center gap-3 min-w-0">
+                @if (loc.logo) {
+                  <p-avatar [image]="loc.logo" shape="circle" size="normal" class="flex-shrink-0" />
+                } @else {
+                  <div
+                    class="loc-initials flex-shrink-0 flex align-items-center justify-content-center"
+                    [ngClass]="getLocColor(loc.name)"
+                  >
+                    {{ getLocInitials(loc.name) }}
+                  </div>
+                }
+                <div class="min-w-0">
+                  <span class="loc-card-name block" [class.loc-card-name--active]="isActive">{{
+                    loc.name
+                  }}</span>
+                  <div class="loc-card-meta flex flex-wrap align-items-center gap-2 mt-1">
+                    <span
+                      class="loc-chat-count flex align-items-center gap-1 flex-shrink-0"
+                      [class.loc-chat-count--active]="isActive"
+                    >
+                      <i class="pi pi-users"></i>{{ loc.residentsCount }} Chats
+                    </span>
+                    <span class="loc-separator">•</span>
+                    <span class="loc-balance flex-shrink-0">
+                      ${{
+                        loc.outstandingBalance ? (loc.outstandingBalance | number: '1.0-0') : '0'
+                      }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div class="loc-card-indicator flex align-items-center flex-shrink-0">
+                @if (isActive) {
+                  <div class="loc-active-dot"></div>
+                } @else {
+                  <i class="pi pi-chevron-right loc-chevron"></i>
+                }
+              </div>
+            </div>
+
+            <!-- 3-dot menu -->
+            <button
+              (click)="
+                $event.stopPropagation(); openCardMenuId = openCardMenuId === loc.id ? null : loc.id
+              "
+              class="loc-card-menu-btn absolute"
+            >
+              <i class="pi pi-ellipsis-h"></i>
+            </button>
+
+            @if (openCardMenuId === loc.id) {
+              <div class="click-trap-20" (click)="openCardMenuId = null"></div>
+              <div class="loc-card-dropdown">
+                <button
+                  (click)="openEditModal(loc)"
+                  class="loc-dropdown-item loc-dropdown-item--edit flex align-items-center gap-2"
+                >
+                  <i class="pi pi-pencil"></i> Edit Property
+                </button>
+                <button
+                  (click)="confirmDelete(loc); openCardMenuId = null"
+                  class="loc-dropdown-item loc-dropdown-item--delete flex align-items-center gap-2"
+                >
+                  <i class="pi pi-trash"></i> Delete
+                </button>
+              </div>
+            }
+          </div>
+        }
+      }
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="loc-panel flex-1 flex flex-column overflow-hidden">
+    <!-- Sub top navbar -->
+    <div
+      class="loc-panel-header flex align-items-center justify-content-between gap-4 flex-shrink-0"
+    >
+      <div class="flex align-items-center gap-4 min-w-0 flex-1">
+        <!-- Telegram account indicator -->
+        <div class="tg-indicator flex align-items-center gap-2 flex-shrink-0">
+          <div class="tg-avatar-wrap relative flex-shrink-0">
+            @if (activeLoc?.assignedTelegramSession?.profilePhoto) {
+              <p-avatar
+                [image]="activeLoc!.assignedTelegramSession!.profilePhoto!"
+                shape="circle"
+                size="normal"
+              />
+            } @else {
+              <div class="tg-avatar-placeholder flex align-items-center justify-content-center">
+                @if (activeTgName) {
+                  {{ activeTgName.substring(0, 2).toUpperCase() }}
+                } @else {
+                  <i class="pi pi-comments"></i>
+                }
+              </div>
+            }
+            @if (activeLoc?.assignedTelegramSession) {
+              <span
+                class="tg-status-dot absolute"
+                [class.online]="activeLoc!.assignedTelegramSession!.isAuthorized"
+                [class.offline]="!activeLoc!.assignedTelegramSession!.isAuthorized"
+              ></span>
+            }
+          </div>
+          <div class="tg-label min-w-0">
+            <span class="tg-label-title block">Telegram Account</span>
+            <span
+              class="tg-label-name block"
+              [class.has-account]="activeTgName"
+              [class.no-account]="!activeTgName"
+            >
+              {{ activeTgName || 'No Account Assigned' }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Chat search -->
+        <p-inputgroup class="chat-search">
+          <p-inputGroupAddon>
+            <i class="pi pi-search"></i>
+          </p-inputGroupAddon>
+          <input
+            pInputText
+            type="text"
+            placeholder="Filter linked threads..."
+            [(ngModel)]="chatSearchQuery"
+          />
+        </p-inputgroup>
+      </div>
+
+      <!-- Sync button -->
+      <p-button
+        (onClick)="startImportChats()"
+        icon="pi pi-user-plus"
+        label="Sync Thread Chats"
+        [badge]="importedCount > 0 ? '+' + importedCount : ''"
+        class="flex-shrink-0"
+      />
+    </div>
+
+    <!-- Resident chat list -->
+    <div class="flex-1 flex flex-column overflow-hidden">
+      @if (filteredChats.length === 0) {
+        <div class="loc-chat-empty flex-1 flex align-items-center justify-content-center p-6">
+          <div class="loc-chat-empty-box">
+            <i class="pi pi-search block"></i>
+            <p class="loc-empty-hint">No linked Telegram threads found.</p>
+            <p class="loc-empty-hint">
+              Use the <strong (click)="startImportChats()">Sync Thread Chats</strong> button to link
+              active resident chats.
+            </p>
+          </div>
+        </div>
+      } @else {
+        <div class="loc-table-wrap flex-1 flex flex-column overflow-hidden">
+          <div class="overflow-auto flex-1">
+            <table class="loc-table">
+              <thead class="loc-table-head">
+                <tr>
+                  <th class="py-3 px-4">Resident / Thread Link</th>
+                  <th class="py-3 px-4">Unpaid Balance</th>
+                  <th class="py-3 px-4">Status</th>
+                  <th class="py-3 px-4 text-right">Operations</th>
+                </tr>
+              </thead>
+              <tbody class="loc-table-body">
+                @for (chat of filteredChats; track chat.code) {
+                  @let unpaid = getUnpaidBalance(chat.code);
+                  @let status = getSendConfig(chat.code);
+                  <tr>
+                    <td class="py-3 px-4">
+                      <div class="flex align-items-center gap-3">
+                        @if (chat.profilePhoto || chat.avatar) {
+                          <img
+                            [src]="(chat.profilePhoto || chat.avatar)!"
+                            alt=""
+                            class="res-avatar"
+                          />
+                        } @else {
+                          <div
+                            class="res-avatar-placeholder flex align-items-center justify-content-center flex-shrink-0"
+                          >
+                            {{ getResidentInitials(chat.name) }}
+                          </div>
+                        }
+                        <div>
+                          <div class="flex align-items-center gap-2">
+                            <span class="res-name">{{ chat.name }}</span>
+                            <span class="res-unit-badge">Unit {{ chat.unit }}</span>
+                          </div>
+                          <div class="res-phone flex align-items-center gap-1 mt-1">
+                            <span class="res-phone-label">Phone:</span>
+                            <span class="res-phone-val">{{ chat.phone }}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+
+                    <td class="py-3 px-4">
+                      @if (unpaid > 0) {
+                        <span class="res-unpaid">${{ unpaid | number: '1.2-2' }}</span>
+                      } @else {
+                        <span class="res-paid inline-flex align-items-center gap-1">
+                          <i class="pi pi-check"></i> Paid &amp; Cleared
+                        </span>
+                      }
+                    </td>
+
+                    <td class="py-3 px-4">
+                      <div class="status-wrap relative inline-block">
+                        @if (status === 'auto') {
+                          <button
+                            (click)="
+                              openDropdownCode = openDropdownCode === chat.code ? null : chat.code
+                            "
+                            class="status-chip auto-chip flex align-items-center gap-1"
+                          >
+                            <i class="pi pi-bolt flex-shrink-0"></i> <span>Sending in 4 days</span>
+                          </button>
+                        }
+                        @if (status === 'sending') {
+                          <button
+                            (click)="
+                              openDropdownCode = openDropdownCode === chat.code ? null : chat.code
+                            "
+                            class="status-chip sending-chip flex align-items-center gap-1"
+                          >
+                            <i class="pi pi-spin pi-spinner flex-shrink-0"></i> <span>Sending</span>
+                          </button>
+                        }
+                        @if (status === 'sent') {
+                          <button
+                            (click)="
+                              openDropdownCode = openDropdownCode === chat.code ? null : chat.code
+                            "
+                            class="status-chip sent-chip flex align-items-center gap-1"
+                          >
+                            <div
+                              class="sent-check flex align-items-center justify-content-center flex-shrink-0"
+                            >
+                              <i class="pi pi-check"></i>
+                            </div>
+                            <span>Sent</span>
+                          </button>
+                        }
+                        @if (status === 'unconfigured') {
+                          <button
+                            (click)="
+                              openDropdownCode = openDropdownCode === chat.code ? null : chat.code
+                            "
+                            class="status-chip unconfigured-chip inline-flex align-items-center gap-1"
+                          >
+                            <i class="pi pi-plus flex-shrink-0"></i> <span>Configure</span>
+                          </button>
+                        }
+
+                        @if (openDropdownCode === chat.code) {
+                          <div class="click-trap-10" (click)="openDropdownCode = null"></div>
+                          <div class="status-dropdown absolute">
+                            <div class="status-dd-header">Dispatch Strategy</div>
+                            <button
+                              type="button"
+                              (click)="updateSendConfig(chat.code, 'auto')"
+                              class="opt-auto flex align-items-center gap-2"
+                              [class.active]="status === 'auto'"
+                            >
+                              <i class="pi pi-bolt flex-shrink-0"></i> Auto Schedule Send
+                            </button>
+                            <button
+                              type="button"
+                              (click)="updateSendConfig(chat.code, 'sending')"
+                              class="opt-sending flex align-items-center gap-2"
+                              [class.active]="status === 'sending'"
+                            >
+                              <i class="pi pi-spin pi-spinner flex-shrink-0"></i> Sending in
+                              Progress
+                            </button>
+                            <button
+                              type="button"
+                              (click)="updateSendConfig(chat.code, 'sent')"
+                              class="opt-sent flex align-items-center gap-2"
+                              [class.active]="status === 'sent'"
+                            >
+                              <div
+                                class="sent-check flex align-items-center justify-content-center flex-shrink-0"
+                              >
+                                <i class="pi pi-check"></i>
+                              </div>
+                              Mark as Sent
+                            </button>
+                            <button
+                              type="button"
+                              (click)="updateSendConfig(chat.code, 'unconfigured')"
+                              class="opt-unconfigured flex align-items-center gap-2"
+                              [class.active]="status === 'unconfigured'"
+                            >
+                              <i class="pi pi-plus flex-shrink-0"></i> Unconfigured
+                            </button>
+                          </div>
+                        }
+                      </div>
+                    </td>
+
+                    <td class="py-3 px-4 text-right">
+                      <button class="ops-btn inline-flex align-items-center gap-1">
+                        <span>Chat Stream</span>
+                        <i class="pi pi-external-link"></i>
+                      </button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>
+
+<!-- ─── Link Telegram Chat Threads Dialog ─── -->
+<p-dialog
+  [(visible)]="showImportModal"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="true"
+  [closeOnEscape]="true"
+  styleClass="loc-import-dialog app-dialog-full"
+  [style]="{ width: '36rem' }"
+>
+  <ng-template pTemplate="header">
+    <div class="modal-heading">
+      <h3 class="modal-title flex align-items-center gap-2">
+        <i class="pi pi-user-plus"></i> Link Telegram Chat threads to Roster
+      </h3>
+      <p class="modal-subtitle">
+        Property Destination: <strong>{{ activeLoc?.name }}</strong>
+      </p>
+    </div>
+  </ng-template>
+
+  <div class="flex flex-column gap-3 loc-import-body">
+    <div class="flex align-items-center gap-2 flex-shrink-0">
+      <p-inputgroup class="flex-1">
+        <p-inputGroupAddon>
+          <i class="pi pi-search"></i>
+        </p-inputGroupAddon>
+        <input
+          pInputText
+          type="text"
+          style="max-width: 250px"
+          placeholder="Search contacts…"
+          [(ngModel)]="importSearchQuery"
+        />
+      </p-inputgroup>
+      <p-button
+        label="Import Selected"
+        icon="pi pi-file-import"
+        [badge]="selectedChatIds.length > 0 ? selectedChatIds.length.toString() : ''"
+        [disabled]="selectedChatIds.length === 0"
+        (onClick)="executeImport()"
+      />
+    </div>
+
+    <div class="loc-import-table flex-1 overflow-hidden">
+      <p-table
+        [value]="filteredImportChats"
+        [loading]="chatsLoading"
+        dataKey="id"
+        [scrollable]="true"
+        scrollHeight="flex"
+        [paginator]="true"
+        [rows]="15"
+        [rowsPerPageOptions]="[15, 30, 50]"
+        styleClass="loc-import-ptable"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th style="width: 3rem">
+              <p-checkbox
+                [binary]="true"
+                [ngModel]="importAllSelected"
+                (onChange)="toggleSelectAll()"
+              />
+            </th>
+            <th>Contact</th>
+            <th style="width: 10rem">Phone</th>
+            <th style="width: 11rem">Username</th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-chat>
+          @let key = chat.id.toString();
+          @let isSelected = selectedChatIds.includes(key);
+          @let alreadyPresent = isAlreadyImported(chat);
+          @let chatName = getChatName(chat);
+          <tr
+            (click)="!alreadyPresent && toggleChatSelect(key)"
+            [class.import-tr--disabled]="alreadyPresent"
+            [class.import-tr--selected]="isSelected && !alreadyPresent"
+            [class.import-tr--selectable]="!alreadyPresent"
+          >
+            <td (click)="$event.stopPropagation()">
+              <p-checkbox
+                [binary]="true"
+                [disabled]="alreadyPresent"
+                [ngModel]="isSelected || alreadyPresent"
+                (onChange)="toggleChatSelect(key)"
+              />
+            </td>
+            <td>
+              <div class="flex align-items-center gap-3 min-w-0">
+                @if (chat.profilePhoto) {
+                  <p-avatar
+                    [image]="chat.profilePhoto"
+                    shape="circle"
+                    size="normal"
+                    class="flex-shrink-0"
+                  />
+                } @else {
+                  <div
+                    class="import-avatar-placeholder flex align-items-center justify-content-center flex-shrink-0"
+                  >
+                    {{ chatName.substring(0, 2).toUpperCase() }}
+                  </div>
+                }
+                <span class="import-name">{{ chatName }}</span>
+                @if (alreadyPresent) {
+                  <p-badge value="Imported" severity="success" />
+                }
+              </div>
+            </td>
+            <td>
+              <span>{{ chat.phone || '—' }}</span>
+            </td>
+            <td>
+              @if (chat.username) {
+                <span>&#64;{{ chat.username }}</span>
+              } @else {
+                <span>—</span>
+              }
+            </td>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="4" class="import-empty text-center">
+              <i class="pi pi-inbox import-empty-icon block"></i>
+              @if (importSearchQuery.trim()) {
+                No contacts match your search.
+              } @else {
+                No Telegram contacts available for this account.
+              }
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+</p-dialog>
+
+<!-- ─── Create / Edit Property Dialog ─── -->
+<p-dialog
+  [(visible)]="showLocationModal"
+  (onHide)="showTgDropdown = false"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="true"
+  [closeOnEscape]="true"
+  [header]="editingLocation ? 'Edit Property' : 'Add New Property'"
+  styleClass="loc-property-dialog"
+  [style]="{ width: '30rem' }"
+  [contentStyle]="{ overflow: 'visible' }"
+>
+  <div class="form-fields">
+    <div class="form-field">
+      <label class="form-label">Property Name <span class="required">*</span></label>
+      <input
+        type="text"
+        [(ngModel)]="locationForm.name"
+        placeholder="e.g. UK 313, Borey Peng Huoth"
+        class="form-input"
+      />
+    </div>
+
+    <div class="form-field">
+      <label class="form-label">Property Code <span class="optional">(optional)</span></label>
+      <input
+        type="text"
+        [(ngModel)]="locationForm.code"
+        placeholder="e.g. UK313"
+        class="form-input"
+      />
+    </div>
+
+    <div class="form-field">
+      <label class="form-label">Logo <span class="optional">(optional)</span></label>
+      <input
+        #logoFileInput
+        type="file"
+        accept="image/jpeg,image/png,image/gif,image/webp"
+        class="hidden"
+        (change)="handleLogoFileChange($event)"
+      />
+      <div class="logo-upload-wrap flex align-items-center gap-3">
+        <div
+          class="logo-preview-circle flex-shrink-0 flex align-items-center justify-content-center overflow-hidden"
+        >
+          @if (logoPreview || locationForm.logo) {
+            <img
+              [src]="logoPreview || locationForm.logo"
+              alt="logo"
+              class="w-full h-full"
+              style="object-fit: cover"
+            />
+          } @else {
+            <i class="pi pi-building"></i>
+          }
+        </div>
+        <div class="logo-upload-actions flex-1">
+          <p-button
+            [label]="logoPreview || locationForm.logo ? 'Change Logo' : 'Upload Logo'"
+            [icon]="'pi ' + (logoPreview || locationForm.logo ? 'pi-pencil' : 'pi-cloud-upload')"
+            variant="text"
+            [style]="{ 'font-size': '.75rem' }"
+            (onClick)="logoFileInput.click()"
+            severity="secondary"
+          >
+          </p-button>
+          @if (logoPreview || locationForm.logo) {
+            <p-button
+              [label]="'Remove'"
+              variant="text"
+              [style]="{ 'font-size': '.75rem' }"
+              (onClick)="logoFile = null; logoPreview = ''; locationForm.logo = ''"
+              icon="pi pi-trash"
+              severity="danger"
+            >
+            </p-button>
+          }
+          <p class="logo-hint">JPEG, PNG, GIF or WebP · max 5 MB</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-field">
+      <label class="form-label"
+        >Assigned Telegram Account <span class="optional">(optional)</span></label
+      >
+      <div class="tg-dropdown-wrap relative">
+        <button
+          type="button"
+          (click)="showTgDropdown = !showTgDropdown"
+          class="tg-dropdown-btn flex align-items-center gap-2"
+        >
+          @if (selectedSession) {
+            @if (selectedSession.profilePhoto) {
+              <img
+                [src]="selectedSession.profilePhoto"
+                alt=""
+                class="tg-btn-avatar flex-shrink-0"
+              />
+            } @else {
+              <div
+                class="tg-btn-avatar-placeholder flex align-items-center justify-content-center flex-shrink-0"
+              >
+                {{ tgInitials(selectedSession) }}
+              </div>
+            }
+            <span class="tg-btn-name flex-1">{{ tgLabel(selectedSession) }}</span>
+            <span
+              class="tg-btn-status flex-shrink-0"
+              [class.active]="selectedSession.isAuthorized"
+              [class.offline]="!selectedSession.isAuthorized"
+            >
+              {{ selectedSession.isAuthorized ? 'Active' : 'Offline' }}
+            </span>
+          } @else {
+            <span class="tg-btn-placeholder flex-1">No account assigned</span>
+          }
+          <i class="pi pi-chevron-down flex-shrink-0"></i>
+        </button>
+
+        @if (showTgDropdown) {
+          <div class="click-trap-10" (click)="showTgDropdown = false"></div>
+          <div class="tg-dropdown-list absolute overflow-y-auto">
+            <button
+              type="button"
+              (click)="locationForm.assignedTelegramSessionId = null; showTgDropdown = false"
+              class="tg-dd-none"
+            >
+              None / Unassign
+            </button>
+            @if (state.telegramSessions().length === 0) {
+              <div class="tg-dd-empty">No Telegram accounts configured</div>
+            } @else {
+              @for (session of state.telegramSessions(); track session.id) {
+                <button
+                  type="button"
+                  (click)="
+                    locationForm.assignedTelegramSessionId = session.id; showTgDropdown = false
+                  "
+                  class="tg-dd-item flex align-items-center gap-2"
+                  [class.tg-dd-item--selected]="
+                    locationForm.assignedTelegramSessionId === session.id
+                  "
+                >
+                  @if (session.profilePhoto) {
+                    <img
+                      [src]="session.profilePhoto"
+                      alt=""
+                      class="tg-dd-avatar-img flex-shrink-0"
+                    />
+                  } @else {
+                    <div
+                      class="tg-dd-avatar-placeholder flex align-items-center justify-content-center flex-shrink-0"
+                    >
+                      {{ tgInitials(session) }}
+                    </div>
+                  }
+                  <div class="flex-1 min-w-0">
+                    <div class="tg-dd-item-name">{{ tgLabel(session) }}</div>
+                    <div class="tg-dd-item-sub">{{ session.phoneNumber ?? session.userName }}</div>
+                  </div>
+                  <span
+                    class="tg-dd-item-status flex-shrink-0"
+                    [class.active]="session.isAuthorized"
+                    [class.offline]="!session.isAuthorized"
+                  >
+                    {{ session.isAuthorized ? 'Active' : 'Offline' }}
+                  </span>
+                </button>
+              }
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <button (click)="showLocationModal = false" class="btn-cancel-light">Cancel</button>
+    <button
+      (click)="handleSaveLocation()"
+      [disabled]="!locationForm.name.trim() || saving"
+      class="btn-submit flex align-items-center gap-2"
+    >
+      @if (saving) {
+        <i class="pi pi-spin pi-spinner"></i>
+      }
+      {{ editingLocation ? 'Save Changes' : 'Create Property' }}
+    </button>
+  </ng-template>
+</p-dialog>
+
+<!-- ─── Delete Confirmation ─── -->
+<p-confirmDialog styleClass="app-confirm-danger" [style]="{ width: '28rem' }" />

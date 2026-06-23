@@ -1,0 +1,43 @@
+.p-paginator {
+  background: var(--app-th-bg, #0f172a) !important;
+  color: var(--app-slate-400, #94a3b8) !important;
+  border-top: 1px solid var(--app-slate-700, #334155) !important;
+
+  .p-paginator-first,
+  .p-paginator-prev,
+  .p-paginator-next,
+  .p-paginator-last,
+  .p-paginator-page {
+    color: var(--app-slate-400, #94a3b8) !important;
+    background: transparent !important;
+    border: none !important;
+
+    &:not(.p-disabled):hover {
+      background: color-mix(in srgb, var(--app-slate-700, #334155) 30%, transparent) !important;
+      color: var(--app-slate-200, #e2e8f0) !important;
+    }
+
+    &.p-disabled {
+      opacity: 0.4 !important;
+    }
+  }
+
+  .p-paginator-page.p-paginator-page-selected {
+    background: color-mix(in srgb, var(--p-primary-500, #10b981) 18%, transparent) !important;
+    color: var(--app-primary-text, #34d399) !important;
+  }
+
+  // "Rows per page" select
+  .p-select {
+    background: var(--app-input-bg, #0f172a) !important;
+    border-color: var(--app-input-border, #334155) !important;
+
+    .p-select-label {
+      color: var(--app-slate-300, #cbd5e1) !important;
+    }
+  }
+
+  .p-paginator-current {
+    color: var(--app-slate-500, #64748b) !important;
+  }
+}

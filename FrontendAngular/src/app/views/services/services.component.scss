@@ -1,0 +1,113 @@
+
+.svc-search { width: 22rem; max-width: 100%; }
+
+// ── Table cell content (p-table chrome themed globally in styles/_table) ─────
+.svc-cell-name { font-size: 0.875rem; font-weight: 500; color: var(--app-slate-100, #f1f5f9); }
+.svc-cell-muted { font-size: 0.875rem; color: var(--app-slate-400, #94a3b8); }
+.svc-cell-val { font-size: 0.875rem; color: var(--app-slate-300, #cbd5e1); }
+.svc-cell-icon { font-size: 0.75rem; color: var(--app-slate-500, #64748b); }
+.svc-amount { font-size: 0.875rem; font-weight: 600; color: var(--app-rose-text, #fb7185); }
+
+// ── Empty state (p-table emptymessage) ───────────────────────────────────────
+.svc-empty { padding: 3rem 0; color: var(--app-slate-500, #64748b); }
+
+.svc-empty-icon {
+  font-size: 2.25rem;
+  margin-bottom: 0.75rem;
+  color: var(--app-slate-600, #475569);
+}
+
+// ── Row action buttons (PrimeNG p-button overrides) ──────────────────────────
+.svc-btn-template {
+  background: transparent !important;
+  border-color: color-mix(in srgb, var(--p-violet-500, #8b5cf6) 40%, transparent) !important;
+  color: var(--app-violet-text, #a78bfa) !important;
+
+  &:hover:not(:disabled) { background: color-mix(in srgb, var(--p-violet-500, #8b5cf6) 10%, transparent) !important; }
+}
+
+.svc-btn-edit {
+  background: transparent !important;
+  border-color: color-mix(in srgb, var(--p-sky-500, #0ea5e9) 40%, transparent) !important;
+  color: var(--app-sky-text, #38bdf8) !important;
+
+  &:hover:not(:disabled) { background: color-mix(in srgb, var(--p-sky-500, #0ea5e9) 10%, transparent) !important; }
+}
+
+.svc-btn-danger {
+  background: transparent !important;
+  border-color: color-mix(in srgb, var(--p-rose-500, #f43f5e) 40%, transparent) !important;
+  color: var(--app-rose-text, #fb7185) !important;
+
+  &:hover:not(:disabled) { background: color-mix(in srgb, var(--p-rose-500, #f43f5e) 10%, transparent) !important; }
+}
+
+// ── Add / Edit + Template dialogs (chrome themed globally in styles/_dialog) ──
+// ── Template variable picker (right column) ──────────────────────────────────
+.svc-tpl-vars {
+  width: 12rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  padding: 0.75rem;
+  background: color-mix(in srgb, var(--app-slate-950, #020617) 50%, transparent);
+  border: 1px solid var(--app-slate-700, #334155);
+  border-radius: 0.625rem;
+}
+
+.svc-tpl-vars-title {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--app-slate-400, #94a3b8);
+  margin-bottom: 0.125rem;
+}
+
+.svc-tpl-var {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.125rem;
+  width: 100%;
+  padding: 0.4rem 0.5rem;
+  text-align: left;
+  background: var(--app-slate-850, #1e293b);
+  border: 1px solid var(--app-slate-700, #334155);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+
+  &:hover {
+    background: color-mix(in srgb, var(--p-violet-500, #8b5cf6) 12%, transparent);
+    border-color: color-mix(in srgb, var(--p-violet-500, #8b5cf6) 45%, transparent);
+  }
+}
+
+.svc-tpl-var-token {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--app-violet-text, #c4b5fd);
+}
+
+.svc-tpl-var-label {
+  font-size: 0.6875rem;
+  color: var(--app-slate-400, #94a3b8);
+}
+
+.svc-textarea {
+  resize: vertical;
+  min-height: 16rem;
+  flex: 1 1 auto;
+}
+
+// Fullscreen template dialog: body + field stretch so the textarea fills height
+.svc-tpl-body {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.svc-tpl-body > .dlg-field {
+  min-height: 0;
+}
+

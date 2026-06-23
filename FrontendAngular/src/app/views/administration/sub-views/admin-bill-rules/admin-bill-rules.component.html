@@ -1,0 +1,93 @@
+<div class="abr-card bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
+  <div class="px-5 py-4 border-b border-slate-700 flex items-center gap-2">
+    <i class="pi pi-sliders-v text-amber-400"></i>
+    <h2 class="text-slate-100 font-semibold" style="margin: 0; font-size: 0.9375rem">
+      Bill Status Rules
+    </h2>
+    @if (ruleUpdatedOn()) {
+      <span class="ml-auto text-xs text-slate-500 font-mono">Updated {{ ruleUpdatedOn() }}</span>
+    }
+  </div>
+
+  @if (ruleLoading()) {
+    <div class="p-5 flex items-center justify-center">
+      <i class="pi pi-spinner pi-spin text-slate-500"></i>
+    </div>
+  } @else {
+    <div class="p-5">
+      <p class="text-slate-500 text-xs leading-relaxed" style="margin: 0 0 1.25rem">
+        Controls when bill statuses are automatically transitioned by the system. All non-Paid bills
+        are re-evaluated on every bill list request.
+      </p>
+
+      <div class="grid grid-cols-2 gap-5" style="margin-bottom: 1.25rem">
+        <!-- Preparing Days -->
+        <div class="bg-slate-900 border border-slate-700 rounded-xl p-4 flex flex-column gap-2">
+          <div class="flex items-center gap-2">
+            <span class="abr-dot abr-dot--amber"></span>
+            <span class="text-slate-200 font-semibold" style="font-size: 0.875rem"
+              >Preparing Phase</span
+            >
+          </div>
+          <p class="text-slate-500 text-xs leading-relaxed" style="margin: 0">
+            Days before the due date when pre-due reminders begin firing.
+          </p>
+          <p-inputnumber
+            [ngModel]="preparingDays()"
+            (ngModelChange)="preparingDays.set($event)"
+            [min]="0"
+            [max]="90"
+            suffix=" days before due"
+            class="w-full"
+          />
+        </div>
+
+        <!-- Overdue Days -->
+        <div class="bg-slate-900 border border-slate-700 rounded-xl p-4 flex flex-column gap-2">
+          <div class="flex items-center gap-2">
+            <span class="abr-dot abr-dot--rose"></span>
+            <span class="text-slate-200 font-semibold" style="font-size: 0.875rem"
+              >Overdue Threshold</span
+            >
+          </div>
+          <p class="text-slate-500 text-xs leading-relaxed" style="margin: 0">
+            Days past the due date before transitioning from
+            <em class="text-amber-400" style="font-style: normal">Due</em>
+            to
+            <em class="text-rose-400" style="font-style: normal">Overdue</em>.
+          </p>
+          <p-inputnumber
+            [ngModel]="overdueDays()"
+            (ngModelChange)="overdueDays.set($event)"
+            [min]="1"
+            [max]="180"
+            suffix=" days past due"
+            class="w-full"
+          />
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3 flex-wrap">
+        @if (ruleError()) {
+          <span class="text-rose-400 text-xs flex items-center gap-1">
+            <i class="pi pi-exclamation-triangle"></i> {{ ruleError() }}
+          </span>
+        }
+        @if (ruleSuccess()) {
+          <span class="text-emerald-400 text-xs flex items-center gap-1">
+            <i class="pi pi-check-circle"></i> Saved — applied on next bill list request.
+          </span>
+        }
+        <button (click)="saveRule()" [disabled]="ruleSaving()" class="abr-save-btn">
+          <i
+            class="pi text-xs"
+            [class.pi-check]="!ruleSaving()"
+            [class.pi-spinner]="ruleSaving()"
+            [class.pi-spin]="ruleSaving()"
+          ></i>
+          {{ ruleSaving() ? 'Saving…' : 'Save Rule' }}
+        </button>
+      </div>
+    </div>
+  }
+</div>

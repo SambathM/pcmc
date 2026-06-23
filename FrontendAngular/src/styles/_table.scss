@@ -1,0 +1,110 @@
+// ── PrimeNG Table (p-table) dark / slate overrides ──────────────────────────
+// The table renders inside .app-dark, so Aura's dark theme applies; these
+// refine it to the project's slate look (used app-wide for consistency).
+.p-datatable {
+  background: transparent;
+
+  .p-datatable-table-container {
+    background: transparent;
+  }
+
+  .p-datatable-header,
+  .p-datatable-footer {
+    background: transparent;
+    border-color: var(--app-slate-700, #334155);
+    color: var(--app-slate-300, #cbd5e1);
+  }
+
+  // Solid (not translucent) so a scrollable sticky header doesn't let rows
+  // bleed through it.
+  .p-datatable-thead > tr > th {
+    background: var(--app-th-bg, #0f172a);
+    color: var(--app-th-text, #94a3b8);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.75rem 1rem;
+    border-color: var(--app-slate-600, #334155);
+    font-weight: 500;
+  }
+
+  .p-datatable-tbody > tr {
+    background: transparent;
+    color: var(--app-slate-300, #cbd5e1);
+
+    > td {
+      padding: 0.625rem 1rem;
+      border-color: color-mix(in srgb, var(--app-slate-700, #334155) 50%, transparent);
+    }
+
+    &:hover {
+      background: color-mix(in srgb, var(--app-slate-700, #334155) 20%, transparent);
+    }
+  }
+
+  // Loading overlay
+  .p-datatable-mask {
+    background: color-mix(in srgb, var(--app-slate-950, #020617) 40%, transparent);
+  }
+  .p-datatable-loading-icon {
+    color: var(--app-primary-text, #34d399);
+  }
+}
+
+// ── Paginator — scheme-aware (renders inside the table; tokens branch on theme) ─
+.p-paginator {
+  background: var(--app-th-bg, #0f172a);
+  color: var(--app-slate-400, #94a3b8);
+  border-top: 1px solid var(--app-slate-700, #334155);
+
+  .p-paginator-first,
+  .p-paginator-prev,
+  .p-paginator-next,
+  .p-paginator-last,
+  .p-paginator-page {
+    color: var(--app-slate-400, #94a3b8);
+    background: transparent;
+    border: none;
+
+    &:not(.p-disabled):hover {
+      background: color-mix(in srgb, var(--app-slate-700, #334155) 30%, transparent);
+      color: var(--app-slate-200, #e2e8f0);
+    }
+
+    &.p-disabled {
+      opacity: 0.4;
+    }
+  }
+
+  .p-paginator-page.p-paginator-page-selected {
+    background: color-mix(in srgb, var(--p-primary-500, #10b981) 18%, transparent);
+    color: var(--app-primary-text, #34d399);
+  }
+
+  // "Rows per page" select
+  .p-select {
+    background: var(--app-input-bg, #0f172a);
+    border-color: var(--app-input-border, #334155);
+
+    .p-select-label {
+      color: var(--app-slate-300, #cbd5e1);
+    }
+  }
+
+  .p-paginator-current {
+    color: var(--app-slate-500, #64748b);
+  }
+}
+
+// ── AR table: compact cells (inline editable add-row) + selected-row tint ────
+.ar-ptable {
+  .p-datatable-thead > tr > th,
+  .p-datatable-tbody > tr > td {
+    padding: 0.5rem 4px;
+  }
+
+  .p-datatable-tbody > tr.ar-row--selected {
+    background: color-mix(in srgb, var(--p-primary-500, #10b981) 7%, transparent) !important;
+  }
+}

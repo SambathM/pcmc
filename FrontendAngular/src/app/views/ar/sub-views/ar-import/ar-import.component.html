@@ -1,0 +1,231 @@
+<!-- Import trigger button -->
+<button
+  (click)="importPanel.toggle($event)"
+  class="view-action-btn flex align-items-center justify-content-center gap-1"
+>
+  <i class="pi pi-file-import"></i>
+  <span>Import</span>
+  <i class="pi pi-chevron-down view-action-caret"></i>
+</button>
+
+<p-popover #importPanel>
+  <div class="view-import-menu flex flex-column">
+    <button
+      class="view-import-item flex align-items-center gap-3"
+      (click)="fileInput.click(); importPanel.hide()"
+    >
+      <i class="pi pi-upload view-import-item-icon"></i>
+      <div class="flex flex-column">
+        <span class="view-import-item-title">Import Excel File</span>
+        <span class="view-import-item-sub">Upload a filled .xlsx bill sheet</span>
+      </div>
+    </button>
+    <button
+      class="view-import-item flex align-items-center gap-3"
+      (click)="downloadTemplate(); importPanel.hide()"
+    >
+      <i class="pi pi-download view-import-item-icon"></i>
+      <div class="flex flex-column">
+        <span class="view-import-item-title">Download Template</span>
+        <span class="view-import-item-sub">Get the .xlsx import template</span>
+      </div>
+    </button>
+  </div>
+</p-popover>
+
+<!-- Hidden file input — triggered by the Import popover item -->
+<input
+  #fileInput
+  type="file"
+  accept=".xlsx,.xls"
+  class="hidden"
+  (change)="onFileSelected($event, fileInput)"
+/>
+
+<!-- AR Import Preview Dialog -->
+<p-dialog
+  [visible]="showDialog()"
+  (visibleChange)="showDialog.set($event)"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="false"
+  [closeOnEscape]="true"
+  header="AR Import Preview"
+  styleClass="ar-dialog"
+  [style]="{ width: '95vw' }"
+>
+  @switch (importStep()) {
+    @case ('validated') {
+      <div class="flex flex-column gap-3">
+        <!-- Stats bar -->
+        <div class="ar-import-stats flex align-items-center gap-3 flex-wrap">
+          <div class="flex align-items-center gap-2">
+            <i class="pi pi-file-excel" style="color: var(--app-primary-text, #34d399)"></i>
+            <span class="ar-import-filename">{{ importFileName() }}</span>
+          </div>
+          <div class="flex align-items-center gap-3 ml-auto flex-wrap">
+            <app-stat-chip [value]="importedRows().length" label="Total Rows" />
+            <app-stat-chip [value]="validCount()" label="Valid" variant="ok" />
+            @if (errorCount() > 0) {
+              <app-stat-chip [value]="errorCount()" label="Location Errors" variant="error" />
+            }
+            @if (residentErrorCount() > 0) {
+              <app-stat-chip [value]="residentErrorCount()" label="Resident Not Found" variant="error" />
+            }
+            <app-stat-chip [value]="unitMatchedCount()" label="Units Matched" />
+            @if (unitNewCount() > 0) {
+              <app-stat-chip [value]="unitNewCount()" label="New Units" variant="new" />
+            }
+            @if (unitUnsetCount() > 0) {
+              <app-stat-chip [value]="unitUnsetCount()" label="Unit Unset" variant="warn" />
+            }
+          </div>
+        </div>
+
+        <!-- Preview table -->
+        <div class="ar-import-preview-wrap view-card overflow-hidden">
+          <p-table
+            [value]="importedRows()"
+            styleClass="ar-ptable"
+            [scrollable]="true"
+            scrollHeight="calc(70vh - 10rem)"
+            [tableStyle]="{ 'min-width': '60rem' }"
+          >
+            <ng-template pTemplate="header">
+              <tr>
+                <th style="width: 3rem">#</th>
+                <th style="width: 13%">Location</th>
+                <th style="width: 18%">Resident</th>
+                <th style="width: 10%">Telegram</th>
+                <th style="width: 11%">Unit Code</th>
+                <th style="width: 11%">Service</th>
+                <th style="width: 8%">Amount</th>
+                <th style="width: 11%">Due Date</th>
+                <th class="ar-th--center" style="width: 6%">Auto Send</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-row>
+              <tr [class.ar-import-row--error]="row.locationError || row.residentStatus === 'not-found'">
+                <td><span class="ar-cell-muted">{{ row.rowIndex }}</span></td>
+                <td>
+                  @if (row.locationError) {
+                    <span class="ar-import-loc-error flex align-items-center gap-1">
+                      <i class="pi pi-exclamation-triangle flex-shrink-0"></i>
+                      {{ row.locationCode }}
+                    </span>
+                  } @else {
+                    <span class="ar-cell-muted">{{ row.locationName }}</span>
+                  }
+                </td>
+                <td>
+                  @if (row.residentStatus === 'matched') {
+                    <span class="ar-cell-name">{{ row.residentResolvedName }}</span>
+                    <span class="ar-import-res-key flex align-items-center gap-1">
+                      @if (row.residentMatchedBy === 'code') {
+                        <span class="ar-import-res-badge ar-import-res-badge--code">CODE</span>
+                        <span class="ar-cell-sub">{{ row.residentCode }}</span>
+                      } @else {
+                        <span class="ar-import-res-badge ar-import-res-badge--phone">PHONE</span>
+                        <span class="ar-cell-sub">{{ row.residentPhone }}</span>
+                      }
+                    </span>
+                  } @else {
+                    <span class="ar-import-res-error flex align-items-center gap-1">
+                      <i class="pi pi-times-circle flex-shrink-0"></i>
+                      @if (row.residentCode) { {{ row.residentCode }} }
+                      @else { {{ row.residentPhone || '—' }} }
+                    </span>
+                  }
+                </td>
+                <td>
+                  @if (row.residentTelegram) {
+                    <span class="ar-import-res-tg flex align-items-center gap-1">
+                      <i class="pi pi-telegram flex-shrink-0"></i>
+                      {{ row.residentTelegram }}
+                    </span>
+                  } @else {
+                    <span class="ar-cell-muted">—</span>
+                  }
+                </td>
+                <td>
+                  @switch (row.unitStatus) {
+                    @case ('matched') {
+                      <span class="ar-import-unit-matched flex align-items-center gap-1">
+                        <i class="pi pi-check-circle flex-shrink-0"></i>
+                        {{ row.unitCode }}
+                      </span>
+                    }
+                    @case ('new') {
+                      <span class="ar-import-unit-new flex align-items-center gap-1">
+                        {{ row.unitCode }}
+                        <span class="ar-import-badge-new">NEW</span>
+                      </span>
+                    }
+                    @case ('unset') {
+                      <span class="ar-import-unit-unset flex align-items-center gap-1">
+                        <i class="pi pi-exclamation-circle flex-shrink-0"></i>
+                        Unset
+                      </span>
+                    }
+                  }
+                </td>
+                <td><span class="ar-cell-muted">{{ row.service }}</span></td>
+                <td><span class="ar-amount">{{ row.amount | number: '1.2-2' }}</span></td>
+                <td><span class="ar-cell-date">{{ row.dueDate }}</span></td>
+                <td class="ar-th--center">
+                  <span class="ar-cell-muted">{{ row.autoSend ? 'Yes' : 'No' }}</span>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+
+        <!-- Actions -->
+        @if (confirmError()) {
+          <div class="ar-import-error flex align-items-center gap-2">
+            <i class="pi pi-exclamation-triangle flex-shrink-0"></i>{{ confirmError() }}
+          </div>
+        }
+        <div class="flex justify-content-end gap-2">
+          <button
+            (click)="showDialog.set(false)"
+            [disabled]="confirmLoading()"
+            class="dlg-btn-cancel"
+          >Cancel</button>
+          <button
+            (click)="confirm()"
+            [disabled]="validCount() === 0 || confirmLoading()"
+            class="dlg-btn-save inline-flex align-items-center gap-2"
+          >
+            <i
+              class="pi"
+              [class.pi-check]="!confirmLoading()"
+              [class.pi-spinner]="confirmLoading()"
+              [class.pi-spin]="confirmLoading()"
+            ></i>
+            {{ confirmLoading() ? 'Importing…' : 'Import ' + validCount() + ' Records' }}
+          </button>
+        </div>
+      </div>
+    }
+
+    @case ('finished') {
+      <div class="ar-wizard-center flex flex-column align-items-center gap-3">
+        <div class="ar-wizard-done flex align-items-center justify-content-center">
+          <i class="pi pi-check-circle"></i>
+        </div>
+        <h4 class="ar-wizard-file">{{ validCount() }} Records Imported Successfully</h4>
+        <p class="ar-wizard-text">
+          {{ importFileName() }} has been processed. Billing entries have been added to the AR ledger.
+        </p>
+        <button
+          (click)="showDialog.set(false)"
+          class="dlg-btn-cancel w-full justify-content-center"
+        >
+          Close
+        </button>
+      </div>
+    }
+  }
+</p-dialog>

@@ -1,0 +1,4 @@
+
+// ── Utility classes (moved from global styles.scss; used only by this view) ──
+.bg-slate-900\/40 { background-color: color-mix(in srgb, var(--app-slate-900, #0f172a) 40%, transparent) !important; }
+.bg-rose-500  { background-color: var(--p-rose-500, #f43f5e) !important; }

@@ -1,0 +1,16 @@
+// ── PrimeNG button overrides ──────────────────────────────────────────────────
+// Match standard PrimeNG buttons to the input/select height so they line up in
+// the same rows. Icon-only and rounded buttons keep their own shape.
+.p-button:not(.p-button-icon-only):not(.p-button-rounded) {
+  height: 2.125rem !important;
+  border-radius: 7px !important;
+}
+
+.p-button {
+
+  i,
+  span,
+  div {
+    font-size: .85rem;
+  }
+}

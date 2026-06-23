@@ -1,0 +1,26 @@
+// Sticky, full-width warning strip pinned to the very top of the viewport.
+.conn-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1200; // above app chrome; below PrimeNG modal masks
+  height: 1.75rem;
+  padding: 0 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+
+  i { font-size: 0.8125rem; }
+}
+
+.conn-banner--error {
+  background: var(--p-rose-500, #f43f5e);
+  color: #ffffff;
+}
+
+.conn-banner--warn {
+  background: var(--p-amber-500, #f59e0b);
+  color: var(--p-slate-950, #020617);
+}

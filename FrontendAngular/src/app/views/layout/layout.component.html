@@ -1,0 +1,100 @@
+<div class="app-shell">
+  <div class="app-body">
+    <!-- LEFT SIDEBAR -->
+    <aside class="sidebar flex flex-column">
+      <!-- Logo -->
+      <div class="logo-bar flex align-items-center gap-3 flex-shrink-0">
+        <p-avatar
+          image="/images/uk_condo_logo_1781450064023.jpg"
+          shape="circle"
+          size="normal"
+          class="flex-shrink-0"
+        />
+        <div class="flex flex-column">
+          <h2 class="logo-title m-0">UK CONDO</h2>
+          <span class="logo-sub">Property Collection</span>
+        </div>
+      </div>
+
+      <!-- Nav -->
+      <nav class="sidebar-nav flex-1 overflow-y-auto">
+        @for (item of navItems; track item.route) {
+          <a
+            [routerLink]="item.route"
+            routerLinkActive="nav-active"
+            [routerLinkActiveOptions]="{ exact: false }"
+            class="nav-item"
+          >
+            <span class="flex align-items-center gap-2 min-w-0">
+              <i class="pi {{ item.icon }} nav-icon flex-shrink-0"></i>
+              <span class="nav-label">{{ item.label }}</span>
+            </span>
+            @if (item.badgeFn() > 0) {
+              <span class="nav-badge">{{ item.badgeFn() }}</span>
+            }
+          </a>
+        }
+      </nav>
+
+      <!-- User footer -->
+      <div class="user-footer flex align-items-center justify-content-between flex-shrink-0">
+        <div class="flex align-items-center gap-2">
+          <div class="user-avatar flex align-items-center justify-content-center flex-shrink-0">
+            <i class="pi pi-user"></i>
+          </div>
+          <div>
+            <strong class="user-name">S. Mean (IT)</strong>
+            <span class="user-status">Operator Active</span>
+          </div>
+        </div>
+        <button (click)="logout()" class="logout-btn" title="Sign Out">
+          <i class="pi pi-sign-out"></i>
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN BODY -->
+    <main class="app-main flex flex-column overflow-hidden">
+      <!-- TOP BAR -->
+      <header class="topbar flex align-items-center justify-content-between flex-shrink-0">
+        <div></div>
+        <div class="flex align-items-center gap-3">
+          <app-theme-switcher />
+          <div class="notif-wrap">
+            <button
+              (click)="showNotificationDrawer.set(!showNotificationDrawer())"
+              class="notif-btn"
+            >
+              <i class="pi pi-bell"></i>
+              <span class="notif-dot"></span>
+            </button>
+            @if (showNotificationDrawer()) {
+              <div class="notif-drawer">
+                <span class="notif-title">Unread Alerts</span>
+                <div class="notif-list overflow-y-auto">
+                  <div class="notif-item">
+                    <strong>Arrears Synced</strong>: 538 new ledger files processed from July
+                    template data.
+                  </div>
+                  <div class="notif-item">
+                    <strong>Operator linked</strong>: Manager account paired with database cron
+                    broker correctly.
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+          <div class="status-info">
+            <span class="status-label">SYSTEM LOGS</span>
+            <span class="status-value">100% ONLINE</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- CONTENT -->
+      <div class="content-area flex-1 overflow-y-auto">
+        <router-outlet />
+      </div>
+    </main>
+  </div>
+</div>

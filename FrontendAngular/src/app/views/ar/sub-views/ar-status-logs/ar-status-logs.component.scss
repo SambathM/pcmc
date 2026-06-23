@@ -1,0 +1,70 @@
+// ── Bill identity header ──────────────────────────────────────────────────────
+.log-bill-meta {
+  padding: 0.75rem 0 1rem;
+  border-bottom: 1px solid var(--app-slate-800, #1e293b);
+  margin-bottom: 0.75rem;
+}
+
+.log-bill-name { font-size: 0.875rem; font-weight: 700; color: var(--app-slate-100, #f1f5f9); }
+.log-bill-sub  { font-size: 0.75rem; color: var(--app-slate-500, #64748b); }
+
+// ── Timeline list ─────────────────────────────────────────────────────────────
+.log-list { padding: 0.5rem 0; }
+
+.log-entry { min-height: 3rem; }
+
+// Dot + connecting line
+.log-dot-col { flex-shrink: 0; width: 1.25rem; }
+
+.log-dot {
+  height: 0.625rem;
+  width: 0.625rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 0.25rem;
+
+  &.log-status--preparing { background: var(--app-amber-text, #fbbf24); }
+  &.log-status--due       { background: var(--p-orange-400, #fb923c); }
+  &.log-status--overdue   { background: var(--app-rose-text, #fb7185); }
+  &.log-status--paid      { background: var(--app-primary-text, #34d399); }
+}
+
+.log-line { flex: 1; width: 1px; background: var(--app-slate-800, #1e293b); margin: 0.25rem auto 0; }
+.log-entry:last-child .log-line { display: none; }
+
+// Content
+.log-content { flex: 1; }
+
+.log-status-label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+
+  &.log-status--preparing { color: var(--app-amber-text, #fbbf24); }
+  &.log-status--due       { color: var(--p-orange-400, #fb923c); }
+  &.log-status--overdue   { color: var(--app-rose-text, #fb7185); }
+  &.log-status--paid      { color: var(--app-primary-text, #34d399); }
+}
+
+.log-outcome {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  i { font-size: 0.6875rem; }
+
+  &.log-outcome--success { color: var(--app-primary-text, #34d399); }
+  &.log-outcome--failed  { color: var(--app-rose-text, #fb7185); }
+  &.log-outcome--pending { color: var(--app-slate-400, #94a3b8); }
+}
+
+.log-date   { font-size: 0.6875rem; font-family: monospace; color: var(--app-slate-500, #64748b); }
+.log-reason { font-size: 0.6875rem; color: var(--app-rose-text, #fb7185); }
+
+// ── Empty state ───────────────────────────────────────────────────────────────
+.log-empty {
+  padding: 2rem 0;
+  color: var(--app-slate-600, #475569);
+
+  i { font-size: 1.5rem; }
+  span { font-size: 0.8125rem; }
+}

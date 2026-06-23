@@ -1,0 +1,694 @@
+/* =========================================================
+   BASE
+   ========================================================= */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* =========================================================
+   THEME TOKENS — scheme-aware "slate" role scale.
+   The app's custom chrome paints with these (--app-slate-*) instead of the
+   fixed PrimeNG --p-slate-* values, so it follows the dark/light toggle.
+   .app-dark = the original dark look (identity mapping, unchanged).
+   :root (no .app-dark) = an inverted scale for light mode.
+   ========================================================= */
+:root {
+  color-scheme: light;
+
+  // Accent TEXT colors — darker shades for legibility on light tints.
+  // (Backgrounds/borders keep using --p-*-500 inside color-mix; those read fine
+  // in both schemes. Primary references --p-primary-* so it follows the picker.)
+  --app-primary-text: var(--p-primary-600, #059669);
+  --app-rose-text: var(--p-rose-600, #e11d48);
+  --app-amber-text: var(--p-amber-700, #b45309);
+  --app-sky-text: var(--p-sky-600, #0284c7);
+  --app-violet-text: var(--p-violet-600, #7c3aed);
+  --app-blue-text: var(--p-blue-700, #1d4ed8);
+
+  // Form controls — crisp white field with a clearly visible border in light mode.
+  --app-input-bg: #ffffff;
+  --app-input-border: #cbd5e1;
+
+  // Table header — a distinct light-grey band above the white rows.
+  --app-th-bg: #d6dce523;
+  --app-th-text: #475569;
+
+  // Backgrounds (950 page → 800 cards) ascend in lightness so cards sit ELEVATED
+  // (white) above a soft-grey page — elevation doesn't invert linearly.
+  --app-slate-950: #eef1f6; // page background
+  --app-slate-900: #f6f8fb; // panels / table header / inputs
+  --app-slate-800: #ffffff; // cards / buttons (elevated)
+  --app-slate-850: #f3f4f6; // intermediate elevation
+  // Borders / dividers
+  --app-slate-700: #e2e8f0;
+  --app-slate-600: #cbd5e1;
+  // Text (muted → headings) stays dark for contrast on light surfaces
+  --app-slate-500: #64748b;
+  --app-slate-400: #475569;
+  --app-slate-300: #334155;
+  --app-slate-200: #1e293b;
+  --app-slate-100: #0f172a;
+  --app-slate-50: #020617;
+}
+
+.app-dark {
+  color-scheme: dark;
+
+  // Accent text — original bright shades (dark look unchanged).
+  --app-primary-text: var(--p-primary-400, #34d399);
+  --app-rose-text: var(--p-rose-400, #fb7185);
+  --app-amber-text: var(--p-amber-400, #fbbf24);
+  --app-sky-text: var(--p-sky-400, #38bdf8);
+  --app-violet-text: var(--p-violet-400, #a78bfa);
+  --app-blue-text: #bfdbfe; // blue-200 (original active-card look)
+
+  // Form controls — original dark field (look unchanged).
+  --app-input-bg: #0f172a;
+  --app-input-border: #334155;
+
+  // Table header — original dark band (look unchanged).
+  --app-th-bg: #0f172a;
+  --app-th-text: #94a3b8;
+
+  --app-slate-50: #f8fafc;
+  --app-slate-100: #f1f5f9;
+  --app-slate-200: #e2e8f0;
+  --app-slate-300: #cbd5e1;
+  --app-slate-400: #94a3b8;
+  --app-slate-500: #64748b;
+  --app-slate-600: #475569;
+  --app-slate-700: #334155;
+  --app-slate-800: #1e293b;
+  --app-slate-850: #1a2434;
+  --app-slate-900: #0f172a;
+  --app-slate-950: #020617;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif,
+    'Roboto Mono',
+    monospace;
+  background-color: var(--app-slate-950, #020617);
+  color: var(--app-slate-100, #f1f5f9);
+  font-size: 0.95rem;
+  line-height: 1.25rem;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* =========================================================
+   FLEXBOX EXTRAS  (no PrimeFlex equivalent)
+   ========================================================= */
+.min-w-0 {
+  min-width: 0 !important;
+}
+
+/* =========================================================
+   GRID
+   ========================================================= */
+.grid {
+  display: grid !important;
+}
+.grid-cols-1 {
+  grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+}
+.grid-cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+/* =========================================================
+   SIZING
+   ========================================================= */
+.min-h-screen {
+  min-height: 100vh !important;
+}
+
+.h-2 {
+  height: 0.5rem !important;
+}
+.w-2 {
+  width: 0.5rem !important;
+}
+.h-2\.5 {
+  height: 0.625rem !important;
+}
+.w-2\.5 {
+  width: 0.625rem !important;
+}
+.h-6 {
+  height: 1.5rem !important;
+}
+.h-8 {
+  height: 2rem !important;
+}
+.w-8 {
+  width: 2rem !important;
+}
+.h-9 {
+  height: 2.25rem !important;
+}
+
+/* =========================================================
+   POSITIONING
+   ========================================================= */
+.inset-0 {
+  inset: 0 !important;
+}
+.top-0 {
+  top: 0 !important;
+}
+
+/* fractional / offset positioning */
+
+.z-10 {
+  z-index: 10 !important;
+}
+.z-50 {
+  z-index: 50 !important;
+}
+
+/* =========================================================
+   SPACING EXTRAS  (fractional values PrimeFlex omits)
+   ========================================================= */
+.m-0 {
+  margin: 0 !important;
+}
+
+/* space-y-* */
+.space-y-1 > * + * {
+  margin-top: 0.25rem !important;
+}
+.space-y-6 > * + * {
+  margin-top: 1.5rem !important;
+}
+
+/* divide-y / divide-x */
+.divide-y > * + * {
+  border-top-width: 1px !important;
+  border-top-style: solid !important;
+}
+
+/* =========================================================
+   TYPOGRAPHY
+   ========================================================= */
+.font-black {
+  font-weight: 900 !important;
+}
+.font-mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+}
+
+.tracking-wider {
+  letter-spacing: 0.05em !important;
+}
+.tracking-widest {
+  letter-spacing: 0.1em !important;
+}
+
+.leading-relaxed {
+  line-height: 1.625 !important;
+}
+
+.truncate {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.text-3xl {
+  font-size: 1.875rem !important;
+  line-height: 2.25rem !important;
+}
+.text-4xl {
+  font-size: 2.25rem !important;
+  line-height: 2.5rem !important;
+}
+
+/* Arbitrary text sizes */
+.text-\[10px\] {
+  font-size: 10px !important;
+}
+.text-\[11px\] {
+  font-size: 11px !important;
+}
+
+/* =========================================================
+   BORDERS
+   ========================================================= */
+.border {
+  border-width: 1px !important;
+  border-style: solid !important;
+}
+.border-2 {
+  border-width: 2px !important;
+  border-style: solid !important;
+}
+.border-t {
+  border-top-width: 1px !important;
+  border-top-style: solid !important;
+}
+.border-b {
+  border-bottom-width: 1px !important;
+  border-bottom-style: solid !important;
+}
+.border-collapse {
+  border-collapse: collapse !important;
+}
+
+.rounded {
+  border-radius: 0.25rem !important;
+}
+.rounded-lg {
+  border-radius: 0.5rem !important;
+}
+.rounded-xl {
+  border-radius: 0.75rem !important;
+}
+.rounded-full {
+  border-radius: 9999px !important;
+}
+
+/* =========================================================
+   OBJECT / MISC
+   ========================================================= */
+.object-cover {
+  object-fit: cover !important;
+}
+
+/* =========================================================
+   TRANSITIONS
+   ========================================================= */
+.transition {
+  transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+.transition-colors {
+  transition:
+    color,
+    background-color,
+    border-color 150ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+.transition-all {
+  transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* =========================================================
+   ANIMATIONS
+   ========================================================= */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes ping {
+  75%,
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+@keyframes pulse {
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite !important;
+}
+.animate-ping {
+  animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite !important;
+}
+
+/* Ring (box-shadow based; ring-color set as CSS var by color class) */
+
+/* =========================================================
+   BACKGROUND COLORS
+   ========================================================= */
+.bg-slate-700 {
+  background-color: var(--app-slate-700, #334155) !important;
+}
+.bg-slate-800 {
+  background-color: var(--app-slate-800, #1e293b) !important;
+}
+.bg-slate-900 {
+  background-color: var(--app-slate-900, #0f172a) !important;
+}
+.bg-slate-950 {
+  background-color: var(--app-slate-950, #020617) !important;
+}
+
+.bg-slate-900\/50 {
+  background-color: color-mix(in srgb, var(--app-slate-900, #0f172a) 50%, transparent) !important;
+}
+.bg-slate-900\/60 {
+  background-color: color-mix(in srgb, var(--app-slate-900, #0f172a) 60%, transparent) !important;
+}
+.bg-slate-700\/50 {
+  background-color: color-mix(in srgb, var(--app-slate-700, #334155) 50%, transparent) !important;
+}
+
+.bg-emerald-400 {
+  background-color: var(--app-primary-text, #34d399) !important;
+}
+.bg-emerald-500 {
+  background-color: var(--p-primary-500, #10b981) !important;
+}
+.bg-emerald-500\/10 {
+  background-color: color-mix(in srgb, var(--p-primary-500, #10b981) 10%, transparent) !important;
+}
+.bg-emerald-500\/20 {
+  background-color: color-mix(in srgb, var(--p-primary-500, #10b981) 20%, transparent) !important;
+}
+
+.bg-teal-500\/10 {
+  background-color: color-mix(in srgb, var(--p-teal-500, #14b8a6) 10%, transparent) !important;
+}
+
+.bg-rose-500\/10 {
+  background-color: color-mix(in srgb, var(--p-rose-500, #f43f5e) 10%, transparent) !important;
+}
+
+.bg-amber-500\/10 {
+  background-color: color-mix(in srgb, var(--p-amber-500, #f59e0b) 10%, transparent) !important;
+}
+
+/* =========================================================
+   TEXT COLORS
+   ========================================================= */
+.text-slate-100 {
+  color: var(--app-slate-100, #f1f5f9) !important;
+}
+.text-slate-200 {
+  color: var(--app-slate-200, #e2e8f0) !important;
+}
+.text-slate-300 {
+  color: var(--app-slate-300, #cbd5e1) !important;
+}
+.text-slate-400 {
+  color: var(--app-slate-400, #94a3b8) !important;
+}
+.text-slate-500 {
+  color: var(--app-slate-500, #64748b) !important;
+}
+.text-slate-600 {
+  color: var(--app-slate-600, #475569) !important;
+}
+.text-emerald-400 {
+  color: var(--app-primary-text, #34d399) !important;
+}
+.text-teal-400 {
+  color: var(--p-teal-400, #2dd4bf) !important;
+}
+.text-rose-400 {
+  color: var(--app-rose-text, #fb7185) !important;
+}
+.text-amber-400 {
+  color: var(--app-amber-text, #fbbf24) !important;
+}
+.text-sky-400 {
+  color: var(--app-sky-text, #38bdf8) !important;
+}
+
+/* =========================================================
+   BORDER COLORS
+   ========================================================= */
+.border-slate-600 {
+  border-color: var(--app-slate-600, #475569) !important;
+}
+.border-slate-700 {
+  border-color: var(--app-slate-700, #334155) !important;
+}
+.border-slate-800 {
+  border-color: var(--app-slate-800, #1e293b) !important;
+}
+.border-slate-700\/50 {
+  border-color: color-mix(in srgb, var(--app-slate-700, #334155) 50%, transparent) !important;
+}
+.border-slate-700\/60 {
+  border-color: color-mix(in srgb, var(--app-slate-700, #334155) 60%, transparent) !important;
+}
+.border-emerald-500 {
+  border-color: var(--p-primary-500, #10b981) !important;
+}
+.border-emerald-500\/20 {
+  border-color: color-mix(in srgb, var(--p-primary-500, #10b981) 20%, transparent) !important;
+}
+.border-emerald-500\/40 {
+  border-color: color-mix(in srgb, var(--p-primary-500, #10b981) 40%, transparent) !important;
+}
+.border-rose-500\/20 {
+  border-color: color-mix(in srgb, var(--p-rose-500, #f43f5e) 20%, transparent) !important;
+}
+.border-amber-500\/20 {
+  border-color: color-mix(in srgb, var(--p-amber-500, #f59e0b) 20%, transparent) !important;
+}
+
+/* divide colors */
+
+/* =========================================================
+   HOVER VARIANTS
+   ========================================================= */
+.hover\:bg-slate-700:hover {
+  background-color: var(--app-slate-700, #334155) !important;
+}
+.hover\:bg-emerald-500\/10:hover {
+  background-color: color-mix(in srgb, var(--p-primary-500, #10b981) 10%, transparent) !important;
+}
+.hover\:bg-rose-500\/10:hover {
+  background-color: color-mix(in srgb, var(--p-rose-500, #f43f5e) 10%, transparent) !important;
+}
+
+.select-none {
+  user-select: none !important;
+}
+
+.hover\:border-slate-600:hover {
+  border-color: var(--app-slate-600, #475569) !important;
+}
+
+/* =========================================================
+   RESPONSIVE VARIANTS
+   ========================================================= */
+@media (min-width: 640px) {
+  .sm\:flex-row {
+    flex-direction: row !important;
+  }
+}
+
+/* =========================================================
+   SKY COLOR PALETTE
+   ========================================================= */
+.text-sky-400 {
+  color: var(--app-sky-text, #38bdf8) !important;
+}
+.text-sky-400 {
+  color: var(--app-sky-text, #38bdf8) !important;
+}
+
+/* =========================================================
+   SCROLLBAR THEMING
+   Dark mode: thin, dark thumb that blends with the slate-950 background.
+   Firefox uses scrollbar-color (inherited). WebKit uses the pseudo-elements.
+   ========================================================= */
+.app-dark {
+  scrollbar-width: thin;
+  scrollbar-color: var(--app-slate-700, #334155) transparent;
+}
+
+.app-dark ::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+.app-dark ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.app-dark ::-webkit-scrollbar-thumb {
+  background: var(--app-slate-700, #334155);
+  border-radius: 4px;
+}
+
+.app-dark ::-webkit-scrollbar-thumb:hover {
+  background: var(--app-slate-600, #475569);
+}
+
+/* =========================================================
+   VIEW LAYOUT — shared structural skeleton
+   Used by every full-screen table view (units, services, residents,
+   ar, telegram-accounts). Keeps the per-view SCSS free of boilerplate.
+   ========================================================= */
+.view-container {
+  margin: -1.5rem;
+  height: calc(100vh - 3rem);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--app-slate-950, #020617);
+}
+
+.view-header {
+  height: 55px;
+  padding: 0 0.75rem;
+  border-bottom: 1px solid var(--app-slate-800, #1e293b);
+  background: color-mix(in srgb, var(--app-slate-900, #0f172a) 40%, transparent);
+  flex-shrink: 0;
+}
+
+.view-content {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar { display: none; }
+}
+
+.view-card {
+  background: var(--app-slate-850, #1e293b);
+  border: 1px solid var(--app-slate-700, #334155);
+  border-radius: 5px;
+}
+
+.view-card--fill {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+
+  p-table { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
+}
+
+/* =========================================================
+   DIALOG & ACTION CHROME — shared across all table views
+   Header action buttons, import popover menus, and dialog
+   form/footer chrome. Global so they apply regardless of
+   component view-encapsulation context.
+   ========================================================= */
+
+// Header pill action buttons (base = slate secondary; --add = primary green).
+.view-action-btn {
+  padding: 0 0.875rem;
+  height: 2.25rem;
+  font-weight: 700;
+  font-size: 0.8125rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  line-height: 1;
+  transition: background 0.15s;
+  background: var(--app-slate-850, #1e293b);
+  color: var(--app-slate-300, #cbd5e1);
+  border: 1px solid var(--app-slate-700, #334155);
+
+  i { font-size: 0.8125rem; color: var(--app-primary-text, #34d399); }
+
+  &:hover { background: var(--app-slate-700, #334155); }
+
+  &.view-action-btn--add {
+    background: var(--p-primary-500, #10b981);
+    color: var(--app-slate-950, #020617);
+    border: none;
+
+    i { color: var(--app-slate-950, #020617); }
+
+    &:hover { background: var(--p-primary-400, #34d399); }
+  }
+}
+
+.view-action-caret { color: var(--app-slate-500, #64748b); font-size: 0.7rem; }
+
+// Import / action popover menu (used alongside view-action-btn + p-popover).
+.view-import-menu { width: 15rem; }
+
+.view-import-item {
+  width: 100%;
+  text-align: left;
+  padding: 0.5rem 0.625rem;
+  background: transparent;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover { background: color-mix(in srgb, var(--app-slate-700, #334155) 40%, transparent); }
+}
+
+.view-import-item-icon  { font-size: 1rem; color: var(--app-primary-text, #34d399); }
+.view-import-item-title { font-size: 0.8125rem; font-weight: 600; color: var(--app-slate-100, #f1f5f9); }
+.view-import-item-sub   { font-size: 0.6875rem; color: var(--app-slate-500, #64748b); }
+
+// Dialog footer action buttons.
+.dlg-btn-cancel {
+  padding: 0.5rem 1rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--app-slate-300, #cbd5e1);
+  background: var(--app-slate-850, #1e293b);
+  border: 1px solid var(--app-slate-700, #334155);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover { background: var(--app-slate-700, #334155); }
+}
+
+.dlg-btn-save {
+  padding: 0.5rem 1.25rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--app-slate-950, #020617);
+  background: var(--p-primary-500, #10b981);
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  i { font-size: 0.75rem; }
+
+  &:hover:not(:disabled) { background: var(--p-primary-400, #34d399); }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
+// Dialog form field helpers.
+.dlg-field { display: flex; flex-direction: column; }
+
+.dlg-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--app-slate-300, #cbd5e1);
+  margin-bottom: 0.375rem;
+}
+
+.dlg-req { color: var(--app-rose-text, #fb7185); }
+
+.dlg-hint {
+  font-size: 0.6875rem;
+  color: var(--app-slate-600, #475569);
+  margin: 0.375rem 0 0;
+}
+
+// Inline warning / error notice (header bar or inside a dialog).
+.dlg-alert {
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--app-amber-text, #fcd34d);
+  background: color-mix(in srgb, var(--p-amber-500, #f59e0b) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--p-amber-500, #f59e0b) 30%, transparent);
+
+  i { color: var(--app-amber-text, #fbbf24); }
+}
+

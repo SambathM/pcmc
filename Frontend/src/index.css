@@ -1,0 +1,358 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+/* ==========================================================================
+   Clean Minimalism Design Theme Override System
+   ========================================================================== */
+
+/* Universal Reset */
+body, html, #root {
+  background-color: #F8FAFC !important;
+  color: #1E293B !important;
+  font-family: "Inter", ui-sans-serif, system-ui, sans-serif !important;
+}
+
+/* Main Layout Core Containers */
+main, .bg-slate-950, [class*="bg-slate-950"] {
+  background-color: #F8FAFC !important;
+  color: #1E293B !important;
+}
+
+/* Card panels / Data Tables / Inner Grid Modules */
+.bg-slate-900, 
+[class*="bg-slate-900"], 
+.bg-slate-800, 
+[class*="bg-slate-800"], 
+[class*="bg-slate-800/"], 
+.stat-card {
+  background-color: #FFFFFF !important;
+  border-color: #E2E8F0 !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+  color: #1E293B !important;
+}
+
+/* Modals overlays backgrounds need custom transparent overlay */
+.fixed.inset-0.bg-slate-950\/80 {
+  background-color: rgba(15, 23, 42, 0.6) !important;
+  backdrop-filter: blur(4px) !important;
+}
+
+/* Sidebar Wrapper container rules */
+#sidebar-panel, aside {
+  background-color: #FFFFFF !important;
+  border-right: 1px solid #E2E8F0 !important;
+}
+
+#sidebar-panel h2 {
+  color: #0F172A !important;
+}
+
+/* Inactive Sidebar Buttons styling */
+#sidebar-panel button {
+  color: #64748B !important;
+  border-left: 3px solid transparent !important;
+  border-radius: 0px !important;
+  font-weight: 500 !important;
+  background-color: transparent !important;
+  border-top: none !important;
+  border-bottom: none !important;
+  border-right: none !important;
+  padding-left: 20px !important;
+  padding-right: 20px !important;
+}
+
+#sidebar-panel button:hover {
+  background-color: #F1F5F9 !important;
+  color: #1E293B !important;
+}
+
+/* Active Sidebar Button override */
+#sidebar-panel button[class*="bg-emerald-500/10"],
+#sidebar-panel button[class*="text-emerald-400"] {
+  background-color: #F1F5F9 !important;
+  color: #2563EB !important;
+  border-left-color: #2563EB !important;
+  font-weight: 600 !important;
+}
+
+/* Force Lucide icon color in active tabs to blue */
+#sidebar-panel button[class*="bg-emerald-500/10"] svg {
+  color: #2563EB !important;
+}
+
+/* Top Navigation Bar & Sidebar header & Sticky Sub-Navbars */
+#top-bar, 
+header, 
+#sidebar-logo-header, 
+.sticky.top-0, 
+.sticky.top-\[-24px\], 
+.sticky.top-\[-16px\] {
+  background-color: #FFFFFF !important;
+  border-bottom: 1px solid #eee !important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03), 0 1px 2px rgba(0, 0, 0, 0.02) !important;
+}
+
+#top-bar select {
+  background-color: #F1F5F9 !important;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 6px !important;
+  color: #0F172A !important;
+  font-weight: 600 !important;
+}
+
+/* Walkthrough playbook panel style */
+#walkthrough-guide-panel {
+  background-color: #FFFFFF !important;
+  border-top: 1px solid #E2E8F0 !important;
+  box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.02) !important;
+}
+
+#walkthrough-guide-panel div[class*="bg-slate-950"] {
+  background-color: #F1F5F9 !important;
+  border-color: #E2E8F0 !important;
+}
+
+#walkthrough-guide-panel p {
+  color: #64748B !important;
+}
+
+#walkthrough-guide-panel button[class*="bg-slate-800"] {
+  background-color: #FFFFFF !important;
+  color: #475569 !important;
+  border: 1px solid #E2E8F0 !important;
+}
+
+#walkthrough-guide-panel button[class*="bg-slate-800"]:hover {
+  background-color: #F8FAFC !important;
+  color: #0c0f16 !important;
+}
+
+#walkthrough-guide-panel button[class*="bg-emerald-500"] {
+  background-color: #2563EB !important;
+  color: #FFFFFF !important;
+  box-shadow: none !important;
+}
+
+#walkthrough-guide-panel button[class*="bg-emerald-500"]:hover {
+  background-color: #1D4ED8 !important;
+}
+
+/* Typographic Headings and Text Styles */
+h1, h2, h3, h4, h5, h6 {
+  color: #0F172A !important;
+}
+
+/* Force light/white text colors to dark for light theme — must come before button rules */
+.text-white,
+.text-slate-100, .text-slate-150,
+.text-slate-200, .text-slate-205,
+.text-slate-300, .text-slate-350 {
+  color: #1E293B !important;
+}
+
+/* Secondary Descriptive elements */
+p, .text-slate-400, .text-slate-500, select-none {
+  color: #64748B !important;
+}
+
+p[class*="text-emerald-400"], span[class*="text-emerald-400"] {
+  color: #2563EB !important;
+}
+
+/* Table styling for all views */
+table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+}
+
+thead, tr[class*="border-b border-slate"] {
+  border-bottom: 1px solid #E2E8F0 !important;
+}
+
+th {
+  background-color: #F8FAFC !important;
+  color: #64748B !important;
+  font-weight: 600 !important;
+  padding: 12px 16px !important;
+  border-bottom: 1px solid #E2E8F0 !important;
+  text-transform: uppercase !important;
+  font-size: 11px !important;
+  letter-spacing: 0.025em !important;
+}
+
+td {
+  padding: 12px 16px !important;
+  border-bottom: 1px solid #F1F5F9 !important;
+  color: #334155 !important;
+}
+
+tr:hover {
+  background-color: #F8FAFC !important;
+}
+
+/* Forms & Inputs elements */
+input[type="text"], input[type="password"], textarea, select {
+  background-color: #FFFFFF !important;
+  border: 1px solid #CBD5E1 !important;
+  border-radius: 8px !important;
+  color: #334155 !important;
+}
+
+input[type="text"]:focus, select:focus, textarea:focus {
+  border-color: #2563EB !important;
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15) !important;
+}
+
+/* Badges Status items */
+span[class*="bg-emerald-500/10"],
+div[class*="bg-emerald-500/10"],
+.badge-success {
+  background-color: #DCFCE7 !important;
+  color: #166534 !important;
+  font-weight: 600 !important;
+  border-radius: 99px !important;
+}
+
+span[class*="bg-amber-500/10"],
+div[class*="bg-amber-500/10"],
+.badge-warning {
+  background-color: #FEF9C3 !important;
+  color: #854D0E !important;
+  font-weight: 600 !important;
+  border-radius: 99px !important;
+}
+
+span[class*="bg-teal-500/10"],
+div[class*="bg-teal-500/10"] {
+  background-color: #EFF6FF !important;
+  color: #1E40AF !important;
+  border-radius: 99px !important;
+}
+
+span[class*="bg-rose-500/10"],
+div[class*="bg-rose-500/10"] {
+  background-color: #FEE2E2 !important;
+  color: #991B1B !important;
+  border-radius: 99px !important;
+}
+
+/* Accent Colors & Interactive Elements */
+.text-emerald-400, .text-teal-400, .text-emerald-500, .text-teal-500 {
+  color: #2563EB !important;
+}
+
+/* Action buttons & lists elements */
+button[class*="bg-gradient-to-r"] {
+  background-image: none !important;
+  background-color: #2563EB !important;
+  color: #FFFFFF !important;
+  border-radius: 8px !important;
+  transition: all 0.2s !important;
+}
+
+button[class*="bg-gradient-to-r"]:hover {
+  background-color: #1D4ED8 !important;
+}
+
+button[class*="bg-emerald-500"] {
+  background-color: #2563EB !important;
+  color: #FFFFFF !important;
+}
+
+button[class*="bg-emerald-500"]:hover {
+  background-color: #1D4ED8 !important;
+}
+
+button[class*="bg-slate-800"] {
+  background-color: #FFFFFF !important;
+  color: #475569 !important;
+  border: 1px solid #E2E8F0 !important;
+}
+
+button[class*="bg-slate-800"]:hover {
+  background-color: #F1F5F9 !important;
+}
+
+/* Custom Login Overrides */
+#login-container h1, #login-brand-title {
+  color: #0F172A !important;
+}
+
+#login-container p {
+  color: #64748B !important;
+}
+
+#login-container div[class*="bg-slate-800"] {
+  background-color: #FFFFFF !important;
+  border: 1px solid #E2E8F0 !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03) !important;
+}
+
+#btn-sign-in {
+  background-color: #2563EB !important;
+  color: #FFFFFF !important;
+}
+
+#btn-sign-in:hover {
+  background-color: #1D4ED8 !important;
+}
+
+/* Skeleton shimmer animation */
+@keyframes skeleton-shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.skeleton-avatar {
+  background: linear-gradient(90deg, #E2E8F0 25%, #F8FAFC 50%, #E2E8F0 75%);
+  background-size: 800px 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
+/* Global Contrast Fixes for Forced Light Theme Card Backgrounds */
+.dark .dark\:text-slate-100,
+.dark .dark\:text-slate-200,
+.dark .dark\:text-slate-205,
+.dark .dark\:text-slate-300,
+.dark .dark\:text-slate-150,
+.dark .text-slate-100,
+.dark .text-slate-200,
+.dark .text-slate-205,
+.dark .text-slate-300,
+.operator-title-theme-fix {
+  color: #0F172A !important;
+}
+
+.dark .dark\:text-slate-400,
+.dark .dark\:text-slate-500,
+.dark .dark\:text-slate-505,
+.dark .text-slate-400,
+.dark .text-slate-505 {
+  color: #64748B !important;
+}
+

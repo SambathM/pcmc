@@ -1,0 +1,14 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+}
+
+:host(.stat-chip--ok)    .stat-chip-num { color: var(--app-primary-text, #34d399); }
+:host(.stat-chip--error) .stat-chip-num { color: var(--app-rose-text, #fb7185); }
+:host(.stat-chip--new)   .stat-chip-num { color: var(--p-blue-400, #60a5fa); }
+:host(.stat-chip--warn)  .stat-chip-num { color: var(--app-amber-text, #fbbf24); }
+
+.stat-chip-num   { font-size: 1rem; font-weight: 800; color: var(--app-slate-100, #f1f5f9); line-height: 1; }
+.stat-chip-label { font-size: 0.625rem; font-weight: 600; text-transform: uppercase; color: var(--app-slate-500, #64748b); }

@@ -1,0 +1,398 @@
+<div class="view-container flex flex-column">
+  <!-- Top header bar (search + filters + actions) — consistent with services -->
+  <div class="view-header flex align-items-center gap-2 flex-shrink-0">
+    <p-inputgroup class="ar-search">
+      <p-inputGroupAddon>
+        <i class="pi pi-search"></i>
+      </p-inputGroupAddon>
+      <input
+        pInputText
+        type="text"
+        [style]="{ width: '250px' }"
+        [ngModel]="searchTerm()"
+        (ngModelChange)="searchTerm.set($event)"
+        placeholder="Search resident or unit..."
+      />
+    </p-inputgroup>
+
+    <p-select
+      class="ar-filter"
+      [options]="locationOptions()"
+      [ngModel]="locationFilter()"
+      (ngModelChange)="locationFilter.set($event)"
+      optionLabel="label"
+      optionValue="value"
+    />
+    <p-select
+      class="ar-filter"
+      [options]="serviceOptions()"
+      [ngModel]="serviceFilter()"
+      (ngModelChange)="serviceFilter.set($event)"
+      optionLabel="label"
+      optionValue="value"
+    />
+    <p-select
+      class="ar-filter"
+      [options]="statusOptions"
+      [ngModel]="statusFilter()"
+      (ngModelChange)="statusFilter.set($event)"
+      optionLabel="label"
+      optionValue="value"
+    />
+
+    <!-- Batch bar -->
+    <p-button
+      severity="primary"
+      [disabled]="!selectedBillIds().length"
+      (onClick)="handleBulkReminders()"
+      icon="pi pi-bolt"
+      label="Batch Schedule"
+      class="ml-auto"
+    ></p-button>
+
+    @if (batchError()) {
+      <div class="dlg-alert flex align-items-center gap-2">
+        <i class="pi pi-exclamation-triangle flex-shrink-0"></i>
+        {{ batchError() }}
+      </div>
+    }
+
+    <app-ar-import />
+  </div>
+
+  <!-- Scrollable content -->
+  <div class="view-content ar-content flex-1 overflow-hidden">
+    <div class="view-card view-card--fill overflow-hidden">
+      <p-table
+        [value]="processedBills()"
+        [loading]="state.billsLoading()"
+        dataKey="id"
+        styleClass="ar-ptable"
+        [scrollable]="true"
+        scrollHeight="flex"
+        [tableStyle]="{ 'min-width': '62rem' }"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th class="ar-th--check" style="width: 2.5rem">
+              <input
+                type="checkbox"
+                class="ar-checkbox"
+                [checked]="allSelected()"
+                [indeterminate]="someSelected()"
+                (change)="toggleSelectAll()"
+              />
+            </th>
+            <th style="width: 17%">Unit</th>
+            <th style="width: 19%">Resident</th>
+            <th style="width: 13%">Service</th>
+            <th style="width: 10%">Amount</th>
+            <th style="width: 13%">Due Date</th>
+            <th style="width: 9%">Status</th>
+            <th class="ar-th--center" style="width: 10%">Auto-Send</th>
+            <th class="ar-th--center" style="width: 6%">Add</th>
+          </tr>
+
+          <!-- Inline editable add-bill row (PrimeNG components per cell) -->
+          <tr class="ar-add-row">
+            <td class="ar-td--center"><i class="pi pi-plus ar-add-row-icon"></i></td>
+            <td>
+              <p-select
+                [options]="billUnitOptions()"
+                [ngModel]="formUnitId()"
+                (ngModelChange)="formUnitId.set($event); onResidentPick(null)"
+                optionLabel="label"
+                optionValue="value"
+                placeholder="Unit…"
+                [filter]="true"
+                filterBy="label"
+                [showClear]="true"
+                styleClass="w-full"
+                appendTo="body"
+              />
+            </td>
+            <td>
+              <p-select
+                [options]="billResidentOptions()"
+                [ngModel]="formResidentCode()"
+                (ngModelChange)="onResidentPick($event)"
+                optionLabel="label"
+                optionValue="value"
+                [disabled]="!formUnitId()"
+                [placeholder]="formUnitId() ? 'Resident…' : 'Select unit'"
+                [filter]="true"
+                filterBy="label"
+                [showClear]="true"
+                styleClass="w-full"
+                appendTo="body"
+              />
+            </td>
+            <td>
+              <p-select
+                [options]="billServiceOptions()"
+                [ngModel]="formService()"
+                (ngModelChange)="formService.set($event)"
+                optionLabel="label"
+                optionValue="value"
+                placeholder="Service…"
+                styleClass="w-full"
+                appendTo="body"
+              />
+            </td>
+            <td>
+              <p-inputnumber
+                [ngModel]="formAmount()"
+                (ngModelChange)="formAmount.set($event)"
+                mode="decimal"
+                [minFractionDigits]="2"
+                [maxFractionDigits]="2"
+                placeholder="0.00"
+                styleClass="w-full"
+              />
+            </td>
+            <td>
+              <p-datepicker
+                [ngModel]="formDueDate()"
+                (ngModelChange)="formDueDate.set($event)"
+                dateFormat="yy-mm-dd"
+                placeholder="Date…"
+                [showIcon]="true"
+                styleClass="w-full"
+                appendTo="body"
+              />
+            </td>
+            <td class="ar-td--center">
+              <span class="ar-cell-muted">Auto</span>
+            </td>
+            <td class="ar-td--center">
+              <p-checkbox
+                [ngModel]="formAutoSend()"
+                (ngModelChange)="formAutoSend.set($event)"
+                [binary]="true"
+              />
+            </td>
+            <td>
+              <div class="flex align-items-center justify-content-center gap-1">
+                <button
+                  (click)="handleAddBill()"
+                  [disabled]="addBillSaving()"
+                  title="Save bill"
+                  class="ar-row-btn ar-row-btn--save"
+                >
+                  <i
+                    class="pi"
+                    [class.pi-check]="!addBillSaving()"
+                    [class.pi-spinner]="addBillSaving()"
+                    [class.pi-spin]="addBillSaving()"
+                  ></i>
+                </button>
+                <button
+                  (click)="resetForm()"
+                  [disabled]="addBillSaving()"
+                  title="Clear"
+                  class="ar-row-btn ar-row-btn--clear"
+                >
+                  <i class="pi pi-times"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+
+          @if (addBillError()) {
+            <tr class="ar-add-error-row">
+              <td colspan="9">
+                <span class="ar-add-error flex align-items-center gap-2">
+                  <i class="pi pi-exclamation-triangle flex-shrink-0"></i>{{ addBillError() }}
+                </span>
+              </td>
+            </tr>
+          }
+        </ng-template>
+
+        <ng-template pTemplate="body" let-b>
+          @if (editingBillId() === b.id) {
+            <!-- Inline edit row (mirrors the add row, prefilled with this bill) -->
+            <tr class="ar-edit-row">
+              <td class="ar-td--center"><i class="pi pi-pencil ar-add-row-icon"></i></td>
+              <td>
+                <p-select
+                  [options]="billUnitOptions()"
+                  [ngModel]="editUnitId()"
+                  (ngModelChange)="editUnitId.set($event); onEditResidentPick(null)"
+                  optionLabel="label"
+                  optionValue="value"
+                  placeholder="Unit…"
+                  [filter]="true"
+                  filterBy="label"
+                  [showClear]="true"
+                  styleClass="w-full"
+                  appendTo="body"
+                />
+              </td>
+              <td>
+                <p-select
+                  [options]="editResidentOptions()"
+                  [ngModel]="editResidentCode()"
+                  (ngModelChange)="onEditResidentPick($event)"
+                  optionLabel="label"
+                  optionValue="value"
+                  [disabled]="!editUnitId()"
+                  [placeholder]="editUnitId() ? 'Resident…' : 'Select unit'"
+                  [filter]="true"
+                  filterBy="label"
+                  [showClear]="true"
+                  styleClass="w-full"
+                  appendTo="body"
+                />
+              </td>
+              <td>
+                <p-select
+                  [options]="billServiceOptions()"
+                  [ngModel]="editService()"
+                  (ngModelChange)="editService.set($event)"
+                  optionLabel="label"
+                  optionValue="value"
+                  placeholder="Service…"
+                  styleClass="w-full"
+                  appendTo="body"
+                />
+              </td>
+              <td>
+                <p-inputnumber
+                  [ngModel]="editAmount()"
+                  (ngModelChange)="editAmount.set($event)"
+                  mode="decimal"
+                  [minFractionDigits]="2"
+                  [maxFractionDigits]="2"
+                  placeholder="0.00"
+                  styleClass="w-full"
+                />
+              </td>
+              <td>
+                <p-datepicker
+                  [ngModel]="editDueDate()"
+                  (ngModelChange)="editDueDate.set($event)"
+                  dateFormat="yy-mm-dd"
+                  placeholder="Date…"
+                  [showIcon]="true"
+                  styleClass="w-full"
+                  appendTo="body"
+                />
+              </td>
+              <td>
+                <span class="ar-badge ar-badge--{{ b.status.toLowerCase() }}">{{ b.status }}</span>
+              </td>
+              <td class="ar-td--center">
+                <p-checkbox
+                  [ngModel]="editAutoSend()"
+                  (ngModelChange)="editAutoSend.set($event)"
+                  [binary]="true"
+                />
+              </td>
+              <td>
+                <div class="flex align-items-center justify-content-center gap-1">
+                  <button
+                    (click)="saveEdit()"
+                    [disabled]="editSaving()"
+                    title="Save changes"
+                    class="ar-row-btn ar-row-btn--save"
+                  >
+                    <i
+                      class="pi"
+                      [class.pi-check]="!editSaving()"
+                      [class.pi-spinner]="editSaving()"
+                      [class.pi-spin]="editSaving()"
+                    ></i>
+                  </button>
+                  <button
+                    (click)="cancelEdit()"
+                    [disabled]="editSaving()"
+                    title="Cancel"
+                    class="ar-row-btn ar-row-btn--clear"
+                  >
+                    <i class="pi pi-times"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            @if (editError()) {
+              <tr class="ar-add-error-row">
+                <td colspan="9">
+                  <span class="ar-add-error flex align-items-center gap-2">
+                    <i class="pi pi-exclamation-triangle flex-shrink-0"></i>{{ editError() }}
+                  </span>
+                </td>
+              </tr>
+            }
+          } @else {
+            <tr [class.ar-row--selected]="selectedBillIds().includes(b.id)">
+              <td>
+                <input
+                  type="checkbox"
+                  class="ar-checkbox"
+                  [checked]="selectedBillIds().includes(b.id)"
+                  (change)="toggleRow(b.id)"
+                />
+              </td>
+              <td>
+                <span class="ar-unit">{{ b.unit }}</span>
+              </td>
+              <td>
+                <div class="flex align-items-center gap-2">
+                  @if (getResident(b.residentCode)?.profilePhoto) {
+                    <img
+                      [src]="getResident(b.residentCode)!.profilePhoto"
+                      [alt]="b.residentName"
+                      class="ar-avatar flex-shrink-0"
+                      referrerpolicy="no-referrer"
+                    />
+                  } @else {
+                    <div
+                      class="ar-avatar-placeholder flex align-items-center justify-content-center flex-shrink-0"
+                    >
+                      <i class="pi pi-user"></i>
+                    </div>
+                  }
+                  <span class="ar-cell-name">{{ b.residentName }}</span>
+                </div>
+              </td>
+              <td>
+                <span class="ar-cell-muted">{{ b.service }}</span>
+              </td>
+              <td>
+                <span class="ar-amount">${{ b.amount | number: '1.2-2' }}</span>
+              </td>
+              <td>
+                <span class="ar-cell-date">{{ b.dueDate }}</span>
+              </td>
+              <td>
+                <div class="flex align-items-center gap-1">
+                  <span class="ar-badge ar-badge--{{ b.status.toLowerCase() }}">{{ b.status }}</span>
+                  <button
+                    (click)="logBill.set(b)"
+                    class="ar-log-btn"
+                    title="View status logs"
+                  ><i class="pi pi-history"></i></button>
+                </div>
+              </td>
+              <td class="ar-td--center">
+                <p-badge [value]="b.autoSend === true ? 'Auto' : 'Manual'" severity="secondary" />
+              </td>
+              <td class="ar-td--center">
+                <button
+                  (click)="startEdit(b)"
+                  title="Edit bill"
+                  class="ar-row-btn ar-row-btn--edit"
+                >
+                  <i class="pi pi-pencil"></i>
+                </button>
+              </td>
+            </tr>
+          }
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+
+  <app-ar-status-logs [bill]="logBill()" (closed)="logBill.set(null)" />
+</div>

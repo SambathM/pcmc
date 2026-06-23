@@ -1,0 +1,61 @@
+<p-dialog
+  [visible]="visible()"
+  (visibleChange)="$event ? null : closed.emit()"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closeOnEscape]="true"
+  header="Status Logs"
+  styleClass="ar-dialog"
+  [style]="{ width: '42rem' }"
+>
+  @if (bill(); as b) {
+    <!-- Bill identity -->
+    <div class="log-bill-meta flex align-items-center gap-3">
+      <div class="flex flex-column gap-1">
+        <span class="log-bill-name">{{ b.residentName }}</span>
+        <span class="log-bill-sub">{{ b.unit }} · {{ b.service }} · ${{ b.amount | number: '1.2-2' }} · Due {{ b.dueDate }}</span>
+      </div>
+    </div>
+
+    <!-- Log entries -->
+    @if (logs().length) {
+      <div class="log-list flex flex-column">
+        @for (entry of logs(); track entry.operationDate) {
+          <div class="log-entry flex gap-3">
+            <!-- Timeline dot -->
+            <div class="log-dot-col flex flex-column align-items-center">
+              <div class="log-dot" [class]="statusClass(entry.statusName)"></div>
+              <div class="log-line"></div>
+            </div>
+            <!-- Content -->
+            <div class="log-content flex flex-column gap-1 pb-3">
+              <div class="flex align-items-center gap-2 flex-wrap">
+                <span class="log-status-label" [class]="statusClass(entry.statusName)">
+                  {{ entry.statusName }}
+                </span>
+                <span class="log-outcome flex align-items-center gap-1" [class]="outcomeClass(entry.outcome)">
+                  <i class="pi" [class]="outcomeIcon(entry.outcome)"></i>
+                  {{ entry.outcome }}
+                </span>
+              </div>
+              <span class="log-date">{{ entry.operationDate }}</span>
+              @if (entry.reason) {
+                <span class="log-reason">{{ entry.reason }}</span>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="log-empty flex flex-column align-items-center gap-2">
+        <i class="pi pi-history"></i>
+        <span>No status logs yet</span>
+      </div>
+    }
+  }
+
+  <ng-template pTemplate="footer">
+    <button (click)="closed.emit()" class="dlg-btn-cancel">Close</button>
+  </ng-template>
+</p-dialog>

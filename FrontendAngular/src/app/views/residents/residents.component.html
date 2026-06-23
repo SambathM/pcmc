@@ -1,0 +1,164 @@
+<div class="view-container flex flex-column">
+  <!-- Header bar: search + filters + summary -->
+  <div class="view-header flex align-items-center gap-2 flex-shrink-0">
+    <p-inputgroup class="res-search">
+      <p-inputGroupAddon>
+        <i class="pi pi-search"></i>
+      </p-inputGroupAddon>
+      <input
+        pInputText
+        type="text"
+        placeholder="Search residents..."
+        [ngModel]="searchQuery()"
+        (ngModelChange)="searchQuery.set($event)"
+      />
+    </p-inputgroup>
+
+    <p-select
+      class="res-filter"
+      [options]="locationOptions()"
+      [ngModel]="selectedLocationFilter()"
+      (ngModelChange)="selectedLocationFilter.set($event)"
+      optionLabel="label"
+      optionValue="value"
+      placeholder="All Locations"
+      [showClear]="true"
+    />
+
+    <p-select
+      class="res-filter"
+      [options]="statusOptions"
+      [ngModel]="selectedStatusFilter()"
+      (ngModelChange)="selectedStatusFilter.set($event)"
+      optionLabel="label"
+      optionValue="value"
+      placeholder="All Statuses"
+      [showClear]="true"
+    />
+
+    <div class="res-header-meta flex align-items-center gap-3 ml-auto flex-shrink-0">
+      <span class="res-meta-count">{{ filteredResidents().length }} residents</span>
+      @if (totalOutstanding() > 0) {
+        <span class="res-meta-outstanding">£{{ totalOutstanding() | number: '1.2-2' }} outstanding</span>
+      }
+    </div>
+  </div>
+
+  <!-- Scrollable content -->
+  <div class="view-content flex-1 overflow-hidden">
+    <div class="view-card view-card--fill overflow-hidden">
+      <p-table
+        [value]="filteredResidents()"
+        dataKey="code"
+        [scrollable]="true"
+        scrollHeight="flex"
+        [paginator]="true"
+        [rows]="15"
+        [rowsPerPageOptions]="[15, 30, 50]"
+        styleClass="res-ptable"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Resident</th>
+            <th style="width: 7rem">Unit</th>
+            <th style="width: 10rem">Telegram</th>
+            <th style="width: 8rem">Balance</th>
+            <th style="width: 7rem">Status</th>
+            <th style="width: 10rem">Location</th>
+            <th style="width: 9rem">Phone</th>
+            <th style="width: 6rem">Actions</th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-resident>
+          <tr>
+            <td>
+              <div class="flex align-items-center gap-3">
+                @if (resident.profilePhoto || resident.avatar) {
+                  <img
+                    [src]="resident.profilePhoto || resident.avatar"
+                    [alt]="resident.name"
+                    class="res-avatar flex-shrink-0"
+                  />
+                } @else {
+                  <div class="res-avatar-placeholder flex align-items-center justify-content-center flex-shrink-0">
+                    {{ getInitials(resident.name) }}
+                  </div>
+                }
+                <div>
+                  <div class="res-name">{{ resident.name }}</div>
+                  <div class="res-code">{{ resident.code }}</div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span class="res-unit">{{ resident.unit }}</span>
+            </td>
+            <td>
+              @if (resident.telegram) {
+                <div class="flex align-items-center gap-1">
+                  <i class="pi pi-telegram res-tg-icon"></i>
+                  <span class="res-tg-handle">{{ resident.telegram }}</span>
+                </div>
+              } @else {
+                <span class="res-cell-muted">Not set</span>
+              }
+            </td>
+            <td>
+              <span [class]="getBalanceClass(resident.balance)">
+                £{{ resident.balance | number: '1.2-2' }}
+              </span>
+            </td>
+            <td>
+              <span class="res-status-badge" [ngClass]="getStatusClass(resident.status)">
+                <span class="res-status-dot" [ngClass]="getStatusDotClass(resident.status)"></span>
+                {{ resident.status }}
+              </span>
+            </td>
+            <td>
+              <span class="res-cell-val">{{ resident.locationName }}</span>
+            </td>
+            <td>
+              <span class="res-cell-mono">{{ resident.phone || '—' }}</span>
+            </td>
+            <td>
+              <div class="flex align-items-center gap-2">
+                <button
+                  pButton
+                  icon="pi pi-send"
+                  pTooltip="Send Reminder"
+                  tooltipPosition="top"
+                  [outlined]="true"
+                  class="res-btn-send"
+                  (click)="sendReminder(resident)"
+                ></button>
+                <button
+                  pButton
+                  icon="pi pi-trash"
+                  pTooltip="Remove Resident"
+                  tooltipPosition="top"
+                  [outlined]="true"
+                  class="res-btn-danger"
+                  (click)="deleteResident(resident)"
+                ></button>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="8" class="res-empty text-center">
+              <i class="pi pi-users res-empty-icon block"></i>
+              @if (searchQuery().trim() || selectedLocationFilter() || selectedStatusFilter()) {
+                No residents match your filter.
+              } @else {
+                No residents found.
+              }
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+</div>

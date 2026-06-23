@@ -1,0 +1,44 @@
+.adm-title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--app-slate-200, #e2e8f0);
+}
+
+.adm-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  overflow: hidden;
+}
+
+// ── Left sidebar ──────────────────────────────────────────────────────────────
+.adm-sidebar {
+  width: 14rem;
+  flex-shrink: 0;
+  overflow-y: auto;
+  border-right: 1px solid var(--app-slate-800, #1e293b);
+  background: var(--app-slate-900, #0f172a);
+  padding: 0.25rem;
+}
+
+// ── Right content area ────────────────────────────────────────────────────────
+.adm-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem;
+}
+
+// ── Empty / coming-soon states ────────────────────────────────────────────────
+.adm-empty,
+.adm-coming-soon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 0.625rem;
+  color: var(--app-slate-600, #475569);
+
+  i { font-size: 2.25rem; opacity: 0.35; }
+  p, span { font-size: 0.875rem; margin: 0; }
+}
