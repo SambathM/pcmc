@@ -1,93 +1,146 @@
-<div class="abr-card bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
-  <div class="px-5 py-4 border-b border-slate-700 flex items-center gap-2">
-    <i class="pi pi-sliders-v text-amber-400"></i>
-    <h2 class="text-slate-100 font-semibold" style="margin: 0; font-size: 0.9375rem">
-      Bill Status Rules
-    </h2>
+<div class="abr-page">
+
+  <!-- Page header -->
+  <div class="abr-page-hd">
+    <div class="abr-page-icon">
+      <i class="pi pi-sliders-v"></i>
+    </div>
+    <div class="flex flex-column gap-1">
+      <span class="abr-page-title">Bill Status Rules</span>
+      <span class="abr-page-sub">Configure automatic status thresholds for the billing lifecycle.</span>
+    </div>
     @if (ruleUpdatedOn()) {
-      <span class="ml-auto text-xs text-slate-500 font-mono">Updated {{ ruleUpdatedOn() }}</span>
+      <span class="abr-page-updated">Last saved: {{ ruleUpdatedOn() }}</span>
     }
   </div>
 
   @if (ruleLoading()) {
-    <div class="p-5 flex items-center justify-center">
-      <i class="pi pi-spinner pi-spin text-slate-500"></i>
+    <div class="abr-loading">
+      <i class="pi pi-spinner pi-spin"></i>
+      <span>Loading configuration…</span>
     </div>
   } @else {
-    <div class="p-5">
-      <p class="text-slate-500 text-xs leading-relaxed" style="margin: 0 0 1.25rem">
-        Controls when bill statuses are automatically transitioned by the system. All non-Paid bills
-        are re-evaluated on every bill list request.
-      </p>
 
-      <div class="grid grid-cols-2 gap-5" style="margin-bottom: 1.25rem">
-        <!-- Preparing Days -->
-        <div class="bg-slate-900 border border-slate-700 rounded-xl p-4 flex flex-column gap-2">
-          <div class="flex items-center gap-2">
+    <!-- Status lifecycle diagram -->
+    <div class="abr-section">
+      <span class="abr-section-lbl">Lifecycle Preview</span>
+      <div class="abr-timeline">
+
+        <div class="abr-tl-node">
+          <span class="abr-tl-badge abr-tl-badge--amber">Preparing</span>
+          <span class="abr-tl-sub">{{ preparingDays() }}d before due</span>
+        </div>
+
+        <div class="abr-tl-seg">
+          <span class="abr-tl-dur">{{ preparingDays() }}d</span>
+          <div class="abr-tl-line abr-tl-line--amber"></div>
+        </div>
+
+        <div class="abr-tl-node">
+          <span class="abr-tl-badge abr-tl-badge--orange">Due</span>
+          <span class="abr-tl-sub">Due date</span>
+        </div>
+
+        <div class="abr-tl-seg">
+          <span class="abr-tl-dur">{{ overdueDays() }}d</span>
+          <div class="abr-tl-line abr-tl-line--rose"></div>
+        </div>
+
+        <div class="abr-tl-node">
+          <span class="abr-tl-badge abr-tl-badge--rose">Overdue</span>
+          <span class="abr-tl-sub">{{ overdueDays() }}d past due</span>
+        </div>
+
+        <div class="abr-tl-divider">
+          <span class="abr-tl-divider-line"></span>
+          <span class="abr-tl-divider-or">or</span>
+          <span class="abr-tl-divider-line"></span>
+        </div>
+
+        <div class="abr-tl-node">
+          <span class="abr-tl-badge abr-tl-badge--green">Paid</span>
+          <span class="abr-tl-sub">Admin-only</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Threshold inputs -->
+    <div class="abr-section">
+      <span class="abr-section-lbl">Thresholds</span>
+      <div class="abr-fields">
+
+        <div class="abr-field">
+          <div class="abr-field-hd">
             <span class="abr-dot abr-dot--amber"></span>
-            <span class="text-slate-200 font-semibold" style="font-size: 0.875rem"
-              >Preparing Phase</span
-            >
+            <span class="abr-field-title">Preparing Phase</span>
           </div>
-          <p class="text-slate-500 text-xs leading-relaxed" style="margin: 0">
-            Days before the due date when pre-due reminders begin firing.
+          <p class="abr-field-desc">
+            Days before the due date when the bill enters the pre-due
+            <em class="text-amber-400">Preparing</em> state and reminders begin.
           </p>
           <p-inputnumber
             [ngModel]="preparingDays()"
             (ngModelChange)="preparingDays.set($event)"
             [min]="0"
             [max]="90"
-            suffix=" days before due"
+            suffix=" days"
             class="w-full"
           />
         </div>
 
-        <!-- Overdue Days -->
-        <div class="bg-slate-900 border border-slate-700 rounded-xl p-4 flex flex-column gap-2">
-          <div class="flex items-center gap-2">
+        <div class="abr-field">
+          <div class="abr-field-hd">
             <span class="abr-dot abr-dot--rose"></span>
-            <span class="text-slate-200 font-semibold" style="font-size: 0.875rem"
-              >Overdue Threshold</span
-            >
+            <span class="abr-field-title">Overdue Threshold</span>
           </div>
-          <p class="text-slate-500 text-xs leading-relaxed" style="margin: 0">
-            Days past the due date before transitioning from
-            <em class="text-amber-400" style="font-style: normal">Due</em>
-            to
-            <em class="text-rose-400" style="font-style: normal">Overdue</em>.
+          <p class="abr-field-desc">
+            Days past the due date before a bill transitions from
+            <em class="text-orange-400">Due</em> to
+            <em class="text-rose-400">Overdue</em>.
           </p>
           <p-inputnumber
             [ngModel]="overdueDays()"
             (ngModelChange)="overdueDays.set($event)"
             [min]="1"
             [max]="180"
-            suffix=" days past due"
+            suffix=" days"
             class="w-full"
           />
         </div>
-      </div>
 
-      <div class="flex items-center gap-3 flex-wrap">
-        @if (ruleError()) {
-          <span class="text-rose-400 text-xs flex items-center gap-1">
-            <i class="pi pi-exclamation-triangle"></i> {{ ruleError() }}
-          </span>
-        }
-        @if (ruleSuccess()) {
-          <span class="text-emerald-400 text-xs flex items-center gap-1">
-            <i class="pi pi-check-circle"></i> Saved — applied on next bill list request.
-          </span>
-        }
-        <button (click)="saveRule()" [disabled]="ruleSaving()" class="abr-save-btn">
-          <i
-            class="pi text-xs"
-            [class.pi-check]="!ruleSaving()"
-            [class.pi-spinner]="ruleSaving()"
-            [class.pi-spin]="ruleSaving()"
-          ></i>
-          {{ ruleSaving() ? 'Saving…' : 'Save Rule' }}
-        </button>
       </div>
     </div>
+
+    <!-- Info note -->
+    <div class="abr-note">
+      <i class="pi pi-info-circle"></i>
+      All non-Paid bills are re-evaluated on every bill list request.
+      Changes take effect immediately on the next fetch.
+    </div>
+
+    <!-- Footer -->
+    <div class="abr-footer">
+      @if (ruleError()) {
+        <span class="abr-msg abr-msg--error">
+          <i class="pi pi-exclamation-triangle"></i> {{ ruleError() }}
+        </span>
+      }
+      @if (ruleSuccess()) {
+        <span class="abr-msg abr-msg--ok">
+          <i class="pi pi-check-circle"></i> Saved — applied on next bill list request.
+        </span>
+      }
+      <button (click)="saveRule()" [disabled]="ruleSaving()" class="abr-save-btn">
+        <i
+          class="pi"
+          [class.pi-check]="!ruleSaving()"
+          [class.pi-spinner]="ruleSaving()"
+          [class.pi-spin]="ruleSaving()"
+        ></i>
+        {{ ruleSaving() ? 'Saving…' : 'Save Changes' }}
+      </button>
+    </div>
+
   }
 </div>

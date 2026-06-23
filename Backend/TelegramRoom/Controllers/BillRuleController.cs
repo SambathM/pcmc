@@ -5,7 +5,7 @@ using TelegramEngine.Data;
 
 namespace TelegramRoom.Controllers;
 
-[Route("[controller]")]
+[Route("bill-rule")]
 [ApiController]
 public class BillRuleController(TelegramContext dbContext) : ControllerBase
 {
