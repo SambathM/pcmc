@@ -12,8 +12,8 @@ using TelegramEngine.Data;
 namespace TelegramRoom.Migrations
 {
     [DbContext(typeof(TelegramContext))]
-    [Migration("20260623093954_AddBillRulesAndStatusLogs")]
-    partial class AddBillRulesAndStatusLogs
+    [Migration("20260623102040_UtilityConfigsAndStatusLogs")]
+    partial class UtilityConfigsAndStatusLogs
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -115,37 +115,6 @@ namespace TelegramRoom.Migrations
                     b.HasIndex("UnitId");
 
                     b.ToTable("PcmcBills");
-                });
-
-            modelBuilder.Entity("Library.Models.PcmcBillRule", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("OverdueDays")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("PreparingDays")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("UpdatedOn")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("PcmcBillRules");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            OverdueDays = 7,
-                            PreparingDays = 5,
-                            UpdatedOn = new DateTime(2026, 6, 23, 0, 0, 0, 0, DateTimeKind.Utc)
-                        });
                 });
 
             modelBuilder.Entity("Library.Models.PcmcBillStatusLog", b =>
@@ -484,6 +453,43 @@ namespace TelegramRoom.Migrations
                     b.HasIndex("LocationId");
 
                     b.ToTable("PcmcUnits");
+                });
+
+            modelBuilder.Entity("Library.Models.PcmcUtilityConfig", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTime>("UpdatedOn")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("PcmcUtilityConfigs");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "bill_rule",
+                            UpdatedOn = new DateTime(2026, 6, 23, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Value = "{\"preparingDays\":5,\"overdueDays\":7}"
+                        });
                 });
 
             modelBuilder.Entity("Library.Models.TelegramContact", b =>

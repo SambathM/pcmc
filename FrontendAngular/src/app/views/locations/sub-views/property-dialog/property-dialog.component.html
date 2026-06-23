@@ -1,0 +1,193 @@
+<p-dialog
+  [visible]="visible"
+  (visibleChange)="visibleChange.emit($event)"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="true"
+  [closeOnEscape]="true"
+  [header]="editingLocation ? 'Edit Property' : 'Add New Property'"
+  styleClass="loc-property-dialog"
+  [style]="{ width: '30rem' }"
+  [contentStyle]="{ overflow: 'visible' }"
+>
+  <div class="form-fields">
+    <div class="form-field">
+      <label class="form-label">Property Name <span class="required">*</span></label>
+      <input
+        type="text"
+        [(ngModel)]="locationForm.name"
+        placeholder="e.g. UK 313, Borey Peng Huoth"
+        class="form-input"
+      />
+    </div>
+
+    <div class="form-field">
+      <label class="form-label">Property Code <span class="optional">(optional)</span></label>
+      <input
+        type="text"
+        [(ngModel)]="locationForm.code"
+        placeholder="e.g. UK313"
+        class="form-input"
+      />
+    </div>
+
+    <div class="form-field">
+      <label class="form-label">Logo <span class="optional">(optional)</span></label>
+      <input
+        #logoFileInput
+        type="file"
+        accept="image/jpeg,image/png,image/gif,image/webp"
+        class="hidden"
+        (change)="handleLogoFileChange($event)"
+      />
+      <div class="logo-upload-wrap flex align-items-center gap-3">
+        <div
+          class="logo-preview-circle flex-shrink-0 flex align-items-center justify-content-center overflow-hidden"
+        >
+          @if (logoPreview || locationForm.logo) {
+            <img
+              [src]="logoPreview || locationForm.logo"
+              alt="logo"
+              class="w-full h-full"
+              style="object-fit: cover"
+            />
+          } @else {
+            <i class="pi pi-building"></i>
+          }
+        </div>
+        <div class="logo-upload-actions flex-1">
+          <p-button
+            [label]="logoPreview || locationForm.logo ? 'Change Logo' : 'Upload Logo'"
+            [icon]="'pi ' + (logoPreview || locationForm.logo ? 'pi-pencil' : 'pi-cloud-upload')"
+            variant="text"
+            [style]="{ 'font-size': '.75rem' }"
+            (onClick)="logoFileInput.click()"
+            severity="secondary"
+          >
+          </p-button>
+          @if (logoPreview || locationForm.logo) {
+            <p-button
+              [label]="'Remove'"
+              variant="text"
+              [style]="{ 'font-size': '.75rem' }"
+              (onClick)="logoFile = null; logoPreview = ''; locationForm.logo = ''"
+              icon="pi pi-trash"
+              severity="danger"
+            >
+            </p-button>
+          }
+          <p class="logo-hint">JPEG, PNG, GIF or WebP · max 5 MB</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-field">
+      <label class="form-label"
+        >Assigned Telegram Account <span class="optional">(optional)</span></label
+      >
+      <div class="tg-dropdown-wrap relative">
+        <button
+          type="button"
+          (click)="showTgDropdown = !showTgDropdown"
+          class="tg-dropdown-btn flex align-items-center gap-2"
+        >
+          @if (selectedSession) {
+            @if (selectedSession.profilePhoto) {
+              <img
+                [src]="selectedSession.profilePhoto"
+                alt=""
+                class="tg-btn-avatar flex-shrink-0"
+              />
+            } @else {
+              <div
+                class="tg-btn-avatar-placeholder flex align-items-center justify-content-center flex-shrink-0"
+              >
+                {{ tgInitials(selectedSession) }}
+              </div>
+            }
+            <span class="tg-btn-name flex-1">{{ tgLabel(selectedSession) }}</span>
+            <span
+              class="tg-btn-status flex-shrink-0"
+              [class.active]="selectedSession.isAuthorized"
+              [class.offline]="!selectedSession.isAuthorized"
+            >
+              {{ selectedSession.isAuthorized ? 'Active' : 'Offline' }}
+            </span>
+          } @else {
+            <span class="tg-btn-placeholder flex-1">No account assigned</span>
+          }
+          <i class="pi pi-chevron-down flex-shrink-0"></i>
+        </button>
+
+        @if (showTgDropdown) {
+          <div class="click-trap-10" (click)="showTgDropdown = false"></div>
+          <div class="tg-dropdown-list absolute overflow-y-auto">
+            <button
+              type="button"
+              (click)="locationForm.assignedTelegramSessionId = null; showTgDropdown = false"
+              class="tg-dd-none"
+            >
+              None / Unassign
+            </button>
+            @if (state.telegramSessions().length === 0) {
+              <div class="tg-dd-empty">No Telegram accounts configured</div>
+            } @else {
+              @for (session of state.telegramSessions(); track session.id) {
+                <button
+                  type="button"
+                  (click)="
+                    locationForm.assignedTelegramSessionId = session.id; showTgDropdown = false
+                  "
+                  class="tg-dd-item flex align-items-center gap-2"
+                  [class.tg-dd-item--selected]="
+                    locationForm.assignedTelegramSessionId === session.id
+                  "
+                >
+                  @if (session.profilePhoto) {
+                    <img
+                      [src]="session.profilePhoto"
+                      alt=""
+                      class="tg-dd-avatar-img flex-shrink-0"
+                    />
+                  } @else {
+                    <div
+                      class="tg-dd-avatar-placeholder flex align-items-center justify-content-center flex-shrink-0"
+                    >
+                      {{ tgInitials(session) }}
+                    </div>
+                  }
+                  <div class="flex-1 min-w-0">
+                    <div class="tg-dd-item-name">{{ tgLabel(session) }}</div>
+                    <div class="tg-dd-item-sub">{{ session.phoneNumber ?? session.userName }}</div>
+                  </div>
+                  <span
+                    class="tg-dd-item-status flex-shrink-0"
+                    [class.active]="session.isAuthorized"
+                    [class.offline]="!session.isAuthorized"
+                  >
+                    {{ session.isAuthorized ? 'Active' : 'Offline' }}
+                  </span>
+                </button>
+              }
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <button (click)="visibleChange.emit(false)" class="btn-cancel-light">Cancel</button>
+    <button
+      (click)="handleSaveLocation()"
+      [disabled]="!locationForm.name.trim() || saving"
+      class="btn-submit flex align-items-center gap-2"
+    >
+      @if (saving) {
+        <i class="pi pi-spin pi-spinner"></i>
+      }
+      {{ editingLocation ? 'Save Changes' : 'Create Property' }}
+    </button>
+  </ng-template>
+</p-dialog>

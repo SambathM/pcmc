@@ -67,7 +67,7 @@
         [value]="processedBills()"
         [loading]="state.billsLoading()"
         dataKey="id"
-        styleClass="ar-ptable"
+        class="ar-ptable"
         [scrollable]="true"
         scrollHeight="flex"
         [tableStyle]="{ 'min-width': '62rem' }"
@@ -107,7 +107,7 @@
                 [filter]="true"
                 filterBy="label"
                 [showClear]="true"
-                styleClass="w-full"
+                class="w-full"
                 appendTo="body"
               />
             </td>
@@ -123,7 +123,7 @@
                 [filter]="true"
                 filterBy="label"
                 [showClear]="true"
-                styleClass="w-full"
+                class="w-full"
                 appendTo="body"
               />
             </td>
@@ -135,7 +135,7 @@
                 optionLabel="label"
                 optionValue="value"
                 placeholder="Service…"
-                styleClass="w-full"
+                class="w-full"
                 appendTo="body"
               />
             </td>
@@ -147,7 +147,7 @@
                 [minFractionDigits]="2"
                 [maxFractionDigits]="2"
                 placeholder="0.00"
-                styleClass="w-full"
+                class="w-full"
               />
             </td>
             <td>
@@ -157,12 +157,12 @@
                 dateFormat="yy-mm-dd"
                 placeholder="Date…"
                 [showIcon]="true"
-                styleClass="w-full"
+                class="w-full"
                 appendTo="body"
               />
             </td>
             <td class="ar-td--center">
-              <span class="ar-cell-muted">Auto</span>
+              <!-- <p-badge value="System" severity="secondary" size="small"></p-badge> -->
             </td>
             <td class="ar-td--center">
               <p-checkbox
@@ -225,7 +225,7 @@
                   [filter]="true"
                   filterBy="label"
                   [showClear]="true"
-                  styleClass="w-full"
+                  class="w-full"
                   appendTo="body"
                 />
               </td>
@@ -241,7 +241,7 @@
                   [filter]="true"
                   filterBy="label"
                   [showClear]="true"
-                  styleClass="w-full"
+                  class="w-full"
                   appendTo="body"
                 />
               </td>
@@ -253,7 +253,7 @@
                   optionLabel="label"
                   optionValue="value"
                   placeholder="Service…"
-                  styleClass="w-full"
+                  class="w-full"
                   appendTo="body"
                 />
               </td>
@@ -265,7 +265,7 @@
                   [minFractionDigits]="2"
                   [maxFractionDigits]="2"
                   placeholder="0.00"
-                  styleClass="w-full"
+                  class="w-full"
                 />
               </td>
               <td>
@@ -275,7 +275,7 @@
                   dateFormat="yy-mm-dd"
                   placeholder="Date…"
                   [showIcon]="true"
-                  styleClass="w-full"
+                  class="w-full"
                   appendTo="body"
                 />
               </td>
@@ -367,12 +367,20 @@
               </td>
               <td>
                 <div class="flex align-items-center gap-1">
-                  <span class="ar-badge ar-badge--{{ b.status.toLowerCase() }}">{{ b.status }}</span>
-                  <button
-                    (click)="logBill.set(b)"
-                    class="ar-log-btn"
-                    title="View status logs"
-                  ><i class="pi pi-history"></i></button>
+                  <p-badge
+                    [value]="b.status"
+                    size="small"
+                    [severity]="getStatusSeverity(b.status)"
+                  ></p-badge>
+                  <p-button
+                    pTooltip="View status logs"
+                    tooltipPosition="top"
+                    (onClick)="logBill.set(b)"
+                    icon="pi pi-history"
+                    severity="info"
+                    text="true"
+                    rounded="true"
+                  ></p-button>
                 </div>
               </td>
               <td class="ar-td--center">

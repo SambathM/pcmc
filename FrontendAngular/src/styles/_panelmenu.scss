@@ -54,6 +54,18 @@
     }
   }
 
+  .p-panelmenu-header:not(.p-disabled) .p-panelmenu-header-content:hover {
+    a.p-panelmenu-header-link {
+      color: var(--p-panelmenu-item-icon-focus-color);
+    }
+  }
+
+  .p-panelmenu-item:not(.p-disabled) > .p-panelmenu-item-content:hover {
+    span.p-panelmenu-item-label {
+      color: var(--p-panelmenu-item-icon-focus-color);
+    }
+  }
+
   // Active item — set via MenuItem.styleClass = 'adm-item--active'
   .p-panelmenu-item.adm-item--active > .p-panelmenu-item-content {
     background: color-mix(in srgb, var(--app-primary-text, #34d399) 12%, transparent);

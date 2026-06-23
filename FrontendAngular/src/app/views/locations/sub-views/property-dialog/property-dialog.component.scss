@@ -1,0 +1,361 @@
+// ── Click trap (needed for TG dropdown inside dialog) ──────────────────────────
+.click-trap-10 {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 10;
+}
+
+// ── Form fields ────────────────────────────────────────────────────────────────
+.form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--app-slate-300, #cbd5e1);
+  margin-bottom: 0.375rem;
+
+  .required {
+    color: #f43f5e;
+  }
+
+  .optional {
+    color: var(--app-slate-500, #64748b);
+    font-weight: 400;
+  }
+}
+
+.form-input {
+  width: 100%;
+  border: 1px solid var(--app-slate-700, #334155);
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  color: var(--app-slate-100, #f1f5f9);
+  background: var(--app-slate-950, #020617);
+  outline: none;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+  box-sizing: border-box;
+
+  &::placeholder {
+    color: var(--app-slate-500, #64748b);
+  }
+
+  &:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+  }
+}
+
+// ── Logo upload ────────────────────────────────────────────────────────────────
+.logo-upload-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.logo-preview-circle {
+  height: 3.5rem;
+  width: 3.5rem;
+  border-radius: 50%;
+  border: 2px dashed var(--app-slate-700, #334155);
+  flex-shrink: 0;
+  overflow: hidden;
+  background: var(--app-slate-950, #020617);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+  }
+
+  i {
+    font-size: 1.25rem;
+    color: var(--app-slate-600, #475569);
+  }
+}
+
+.logo-upload-actions {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.logo-hint {
+  font-size: 0.625rem;
+  color: var(--app-slate-500, #64748b);
+  margin: 0;
+}
+
+// ── TG dropdown ────────────────────────────────────────────────────────────────
+.tg-dropdown-wrap {
+  position: relative;
+}
+
+.tg-dropdown-btn {
+  width: 100%;
+  border: 1px solid var(--app-slate-700, #334155);
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--app-slate-950, #020617);
+  cursor: pointer;
+  outline: none;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s,
+    background 0.15s;
+
+  &:hover {
+    background: var(--app-slate-850, #1e293b);
+  }
+
+  &:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+  }
+
+  .tg-btn-placeholder {
+    flex: 1;
+    color: var(--app-slate-500, #64748b);
+  }
+
+  .tg-btn-name {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--app-slate-100, #f1f5f9);
+    font-weight: 600;
+  }
+
+  i.pi-chevron-down {
+    color: var(--app-slate-500, #64748b);
+    font-size: 0.75rem;
+    flex-shrink: 0;
+  }
+}
+
+.tg-btn-avatar {
+  height: 1.5rem;
+  width: 1.5rem;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.tg-btn-avatar-placeholder {
+  height: 1.5rem;
+  width: 1.5rem;
+  border-radius: 50%;
+  background: #1e3a5f;
+  color: #93c5fd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.625rem;
+  font-weight: 900;
+  flex-shrink: 0;
+}
+
+.tg-btn-status {
+  font-size: 0.5625rem;
+  padding: 0.1rem 0.375rem;
+  border-radius: 0.25rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  border: 1px solid;
+
+  &.active {
+    background: color-mix(in srgb, var(--p-primary-500, #10b981) 10%, transparent);
+    color: var(--app-primary-text, #34d399);
+    border-color: color-mix(in srgb, var(--p-primary-500, #10b981) 20%, transparent);
+  }
+
+  &.offline {
+    background: var(--app-slate-850, #1e293b);
+    color: var(--app-slate-500, #64748b);
+    border-color: var(--app-slate-700, #334155);
+  }
+}
+
+.tg-dropdown-list {
+  position: absolute;
+  top: calc(100% + 0.25rem);
+  left: 0;
+  right: 0;
+  z-index: 20;
+  background: var(--app-slate-900, #0f172a);
+  border: 1px solid var(--app-slate-700, #334155);
+  border-radius: 0.75rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  max-height: 12rem;
+  overflow-y: auto;
+}
+
+.tg-dd-none {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  font-size: 0.75rem;
+  color: var(--app-slate-400, #94a3b8);
+  border-bottom: 1px solid var(--app-slate-800, #1e293b);
+  font-weight: 600;
+  cursor: pointer;
+  background: none;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+
+  &:hover {
+    background: var(--app-slate-850, #1e293b);
+  }
+}
+
+.tg-dd-empty {
+  padding: 0.75rem;
+  font-size: 0.75rem;
+  color: var(--app-slate-500, #64748b);
+  text-align: center;
+}
+
+.tg-dd-item {
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  cursor: pointer;
+  border: none;
+  background: none;
+  transition: background 0.1s;
+
+  &:hover {
+    background: var(--app-slate-850, #1e293b);
+  }
+
+  &.tg-dd-item--selected {
+    background: rgba(59, 130, 246, 0.12);
+  }
+
+  .tg-dd-item-name {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--app-slate-100, #f1f5f9);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .tg-dd-item-sub {
+    font-size: 0.625rem;
+    color: var(--app-slate-500, #64748b);
+    font-family: monospace;
+  }
+}
+
+.tg-dd-avatar-img {
+  height: 2rem;
+  width: 2rem;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.tg-dd-avatar-placeholder {
+  height: 2rem;
+  width: 2rem;
+  border-radius: 50%;
+  background: #1e3a5f;
+  color: #93c5fd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 900;
+  flex-shrink: 0;
+}
+
+.tg-dd-item-status {
+  font-size: 0.5625rem;
+  padding: 0.1rem 0.375rem;
+  border-radius: 0.25rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  border: 1px solid;
+
+  &.active {
+    background: color-mix(in srgb, var(--p-primary-500, #10b981) 10%, transparent);
+    color: var(--app-primary-text, #34d399);
+    border-color: color-mix(in srgb, var(--p-primary-500, #10b981) 20%, transparent);
+  }
+
+  &.offline {
+    background: var(--app-slate-850, #1e293b);
+    color: var(--app-slate-500, #64748b);
+    border-color: var(--app-slate-700, #334155);
+  }
+}
+
+// ── Dialog footer buttons ──────────────────────────────────────────────────────
+.btn-cancel-light {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--app-slate-300, #cbd5e1);
+  border-radius: 0.5rem;
+  border: 1px solid var(--app-slate-700, #334155);
+  background: var(--app-slate-850, #1e293b);
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover {
+    background: var(--app-slate-700, #334155);
+  }
+}
+
+.btn-submit {
+  padding: 0.5rem 1.25rem;
+  background: #3b82f6;
+  border: none;
+  border-radius: 0.5rem;
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background 0.15s;
+
+  &:hover:not(:disabled) {
+    background: #2563eb;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  i {
+    font-size: 0.75rem;
+  }
+}

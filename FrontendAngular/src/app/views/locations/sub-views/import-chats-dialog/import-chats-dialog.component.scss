@@ -1,0 +1,98 @@
+// ── Import dialog header ────────────────────────────────────────────────────────
+.modal-heading {
+  min-width: 0;
+}
+
+.modal-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--app-slate-100, #f1f5f9);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+
+  i {
+    color: #3b82f6;
+  }
+}
+
+.modal-subtitle {
+  font-size: 0.75rem;
+  color: var(--app-slate-400, #94a3b8);
+  margin: 0.25rem 0 0;
+
+  strong {
+    color: #60a5fa;
+    font-weight: 600;
+  }
+}
+
+// Dialog body fills the full-screen dialog so the table can flex to height.
+.loc-import-body {
+  flex: 1;
+  min-height: 0;
+}
+
+.loc-import-table {
+  min-height: 0;
+  border-radius: 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--app-slate-700, #334155) 50%, transparent);
+}
+
+// Row states for the import p-table
+.loc-import-ptable {
+  .p-datatable-tbody > tr {
+    user-select: none;
+
+    &.import-tr--selectable {
+      cursor: pointer;
+    }
+
+    &.import-tr--disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    &.import-tr--selected,
+    &.import-tr--selected:hover {
+      background: rgba(59, 130, 246, 0.12) !important;
+    }
+  }
+}
+
+.import-empty {
+  padding: 2.5rem 1rem;
+  color: var(--app-slate-500, #64748b);
+  font-size: 0.8125rem;
+}
+
+.import-empty-icon {
+  font-size: 1.75rem;
+  margin-bottom: 0.5rem;
+  opacity: 0.6;
+}
+
+.import-avatar-placeholder {
+  border-radius: 50%;
+  background: var(--app-slate-700, #334155);
+  border: 1px solid var(--app-slate-600, #475569);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--app-slate-300, #cbd5e1);
+  font-weight: 700;
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  min-width: 2rem;
+  font-size: 0.6875rem;
+}
+
+.import-name {
+  font-weight: 600;
+  color: var(--app-slate-100, #f1f5f9);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

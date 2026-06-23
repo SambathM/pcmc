@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace TelegramRoom.Migrations
 {
     /// <inheritdoc />
-    public partial class AddBillRulesAndStatusLogs : Migration
+    public partial class UtilityConfigsAndStatusLogs : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -39,21 +39,6 @@ namespace TelegramRoom.Migrations
                 oldType: "timestamp with time zone");
 
             migrationBuilder.CreateTable(
-                name: "PcmcBillRules",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    PreparingDays = table.Column<int>(type: "integer", nullable: false),
-                    OverdueDays = table.Column<int>(type: "integer", nullable: false),
-                    UpdatedOn = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PcmcBillRules", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "PcmcBillStatusLogs",
                 columns: table => new
                 {
@@ -77,10 +62,20 @@ namespace TelegramRoom.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.InsertData(
-                table: "PcmcBillRules",
-                columns: new[] { "Id", "OverdueDays", "PreparingDays", "UpdatedOn" },
-                values: new object[] { 1, 7, 5, new DateTime(2026, 6, 23, 0, 0, 0, 0, DateTimeKind.Utc) });
+            migrationBuilder.CreateTable(
+                name: "PcmcUtilityConfigs",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Value = table.Column<string>(type: "text", nullable: false),
+                    UpdatedOn = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PcmcUtilityConfigs", x => x.Id);
+                });
 
             migrationBuilder.UpdateData(
                 table: "PcmcReminderConfigs",
@@ -89,20 +84,31 @@ namespace TelegramRoom.Migrations
                 column: "Enabled",
                 value: false);
 
+            migrationBuilder.InsertData(
+                table: "PcmcUtilityConfigs",
+                columns: new[] { "Id", "Name", "UpdatedOn", "Value" },
+                values: new object[] { 1, "bill_rule", new DateTime(2026, 6, 23, 0, 0, 0, 0, DateTimeKind.Utc), "{\"preparingDays\":5,\"overdueDays\":7}" });
+
             migrationBuilder.CreateIndex(
                 name: "IX_PcmcBillStatusLogs_BillId",
                 table: "PcmcBillStatusLogs",
                 column: "BillId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PcmcUtilityConfigs_Name",
+                table: "PcmcUtilityConfigs",
+                column: "Name",
+                unique: true);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "PcmcBillRules");
+                name: "PcmcBillStatusLogs");
 
             migrationBuilder.DropTable(
-                name: "PcmcBillStatusLogs");
+                name: "PcmcUtilityConfigs");
 
             migrationBuilder.AlterColumn<int>(
                 name: "SortOrder",

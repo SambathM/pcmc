@@ -98,28 +98,6 @@
     color: var(--app-slate-600, #475569);
   }
 
-  // ── Row Actions ───────────────────────────────────────────────────────────
-
-  .unit-btn-edit {
-    background: transparent !important;
-    border-color: color-mix(in srgb, var(--p-sky-500, #0ea5e9) 40%, transparent) !important;
-    color: var(--app-sky-text, #38bdf8) !important;
-
-    &:hover:not(:disabled) {
-      background: color-mix(in srgb, var(--p-sky-500, #0ea5e9) 10%, transparent) !important;
-    }
-  }
-
-  .unit-btn-danger {
-    background: transparent !important;
-    border-color: color-mix(in srgb, var(--p-rose-500, #f43f5e) 40%, transparent) !important;
-    color: var(--app-rose-text, #fb7185) !important;
-
-    &:hover:not(:disabled) {
-      background: color-mix(in srgb, var(--p-rose-500, #f43f5e) 10%, transparent) !important;
-    }
-  }
-
   // ── Form ─────────────────────────────────────────────────────────────────
 
   // dlg-hint can contain a <code> element in the units dialog.

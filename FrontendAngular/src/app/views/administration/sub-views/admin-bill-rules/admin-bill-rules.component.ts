@@ -13,13 +13,13 @@ import { ApiService } from '../../../../libs/services/api.service';
 export class AdminBillRulesComponent {
   private readonly api = inject(ApiService);
 
-  ruleLoading   = signal(true);
-  ruleSaving    = signal(false);
-  ruleError     = signal<string | null>(null);
-  ruleSuccess   = signal(false);
+  ruleLoading = signal(true);
+  ruleSaving = signal(false);
+  ruleError = signal<string | null>(null);
+  ruleSuccess = signal(false);
   ruleUpdatedOn = signal<string | null>(null);
   preparingDays = signal(5);
-  overdueDays   = signal(7);
+  overdueDays = signal(7);
 
   constructor() {
     this.api.getBillRule()

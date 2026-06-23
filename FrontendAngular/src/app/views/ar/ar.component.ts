@@ -72,6 +72,11 @@ export class ArComponent {
     { label: 'Paid', value: 'Paid' },
   ];
 
+
+  getStatusSeverity(arg0: any): "success" | "info" | "warn" | "danger" | "secondary" | "contrast" | null | undefined {
+    return arg0 === 'Paid' ? 'success' : arg0 === 'Due' ? 'warn' : arg0 === 'Overdue' ? 'danger' : arg0 === 'Preparing' ? 'secondary' : null;
+  }
+
   billServiceOptions = computed(() => [
     { label: 'None', value: '' },
     ...this.state.services().map(s => ({ label: s.name, value: s.name })),

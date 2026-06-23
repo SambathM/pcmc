@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Library.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -20,8 +21,7 @@ public class BillController(TelegramContext dbContext) : ControllerBase
         [FromQuery] string? service)
     {
         // ── Status interceptor ────────────────────────────────────────────────
-        var rule = await dbContext.PcmcBillRules.AsNoTracking().FirstOrDefaultAsync()
-            ?? new PcmcBillRule { PreparingDays = 5, OverdueDays = 7 };
+        var rule = await LoadBillRuleAsync();
 
         var today = DateTime.UtcNow.Date;
 
@@ -106,6 +106,16 @@ public class BillController(TelegramContext dbContext) : ControllerBase
         return Ok(bills);
     }
 
+    private static readonly JsonSerializerOptions JsonOpts = new() { PropertyNameCaseInsensitive = true };
+
+    private async Task<BillRuleValues> LoadBillRuleAsync() =>
+        (await dbContext.PcmcUtilityConfigs.AsNoTracking()
+            .Where(c => c.Name == "bill_rule")
+            .Select(c => c.Value)
+            .FirstOrDefaultAsync()) is string json
+        ? JsonSerializer.Deserialize<BillRuleValues>(json, JsonOpts) ?? BillRuleValues.Default
+        : BillRuleValues.Default;
+
     /// <summary>
     /// Compute the system-determined status for a non-Paid bill.
     /// Preparing → bill is in the future (autoSend alerting phase not yet triggered).
@@ -152,8 +162,7 @@ public class BillController(TelegramContext dbContext) : ControllerBase
         // Resolve service by id or name (optional).
         int? serviceId = await ResolveServiceIdAsync(body.ServiceId, body.Service);
 
-        var rule = await dbContext.PcmcBillRules.AsNoTracking().FirstOrDefaultAsync()
-            ?? new PcmcBillRule { PreparingDays = 5, OverdueDays = 7 };
+        var rule = await LoadBillRuleAsync();
 
         var bill = new PcmcBill
         {
@@ -269,8 +278,7 @@ public class BillController(TelegramContext dbContext) : ControllerBase
         var errors = new List<string>();
         var newUnits = new List<object>();
 
-        var importRule = await dbContext.PcmcBillRules.AsNoTracking().FirstOrDefaultAsync()
-            ?? new PcmcBillRule { PreparingDays = 5, OverdueDays = 7 };
+        var importRule = await LoadBillRuleAsync();
         var today = DateTime.UtcNow.Date;
         var overdueDays = importRule.OverdueDays;
 

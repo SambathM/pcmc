@@ -1,0 +1,142 @@
+<p-dialog
+  [visible]="visible"
+  (visibleChange)="visibleChange.emit($event)"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="true"
+  [closeOnEscape]="true"
+  styleClass="loc-import-dialog app-dialog-full"
+  [style]="{ width: '36rem' }"
+>
+  <ng-template pTemplate="header">
+    <div class="modal-heading">
+      <h3 class="modal-title flex align-items-center gap-2">
+        <i class="pi pi-user-plus"></i> Link Telegram Chat threads to Roster
+      </h3>
+      <p class="modal-subtitle">
+        Property Destination: <strong>{{ activeLoc?.name }}</strong>
+      </p>
+    </div>
+  </ng-template>
+
+  <div class="flex flex-column gap-3 loc-import-body">
+    <div class="flex align-items-center gap-2 flex-shrink-0">
+      <p-inputgroup class="flex-1">
+        <p-inputGroupAddon>
+          <i class="pi pi-search"></i>
+        </p-inputGroupAddon>
+        <input
+          pInputText
+          type="text"
+          style="max-width: 250px"
+          placeholder="Search contacts…"
+          [(ngModel)]="importSearchQuery"
+        />
+      </p-inputgroup>
+      <p-button
+        label="Import Selected"
+        icon="pi pi-file-import"
+        [badge]="selectedChatIds.length > 0 ? selectedChatIds.length.toString() : ''"
+        [disabled]="selectedChatIds.length === 0"
+        (onClick)="executeImport()"
+      />
+    </div>
+
+    <div class="loc-import-table flex-1 overflow-hidden">
+      <p-table
+        [value]="filteredImportChats"
+        [loading]="chatsLoading"
+        dataKey="id"
+        [scrollable]="true"
+        scrollHeight="flex"
+        [paginator]="true"
+        [rows]="15"
+        [rowsPerPageOptions]="[15, 30, 50]"
+        styleClass="loc-import-ptable"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th style="width: 3rem">
+              <p-checkbox
+                [binary]="true"
+                [ngModel]="importAllSelected"
+                (onChange)="toggleSelectAll()"
+              />
+            </th>
+            <th>Contact</th>
+            <th style="width: 10rem">Phone</th>
+            <th style="width: 11rem">Username</th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-chat>
+          @let key = chat.id.toString();
+          @let isSelected = selectedChatIds.includes(key);
+          @let alreadyPresent = isAlreadyImported(chat);
+          @let chatName = getChatName(chat);
+          <tr
+            (click)="!alreadyPresent && toggleChatSelect(key)"
+            [class.import-tr--disabled]="alreadyPresent"
+            [class.import-tr--selected]="isSelected && !alreadyPresent"
+            [class.import-tr--selectable]="!alreadyPresent"
+          >
+            <td (click)="$event.stopPropagation()">
+              <p-checkbox
+                [binary]="true"
+                [disabled]="alreadyPresent"
+                [ngModel]="isSelected || alreadyPresent"
+                (onChange)="toggleChatSelect(key)"
+              />
+            </td>
+            <td>
+              <div class="flex align-items-center gap-3 min-w-0">
+                @if (chat.profilePhoto) {
+                  <p-avatar
+                    [image]="chat.profilePhoto"
+                    shape="circle"
+                    size="normal"
+                    class="flex-shrink-0"
+                  />
+                } @else {
+                  <div
+                    class="import-avatar-placeholder flex align-items-center justify-content-center flex-shrink-0"
+                  >
+                    {{ chatName.substring(0, 2).toUpperCase() }}
+                  </div>
+                }
+                <span class="import-name">{{ chatName }}</span>
+                @if (alreadyPresent) {
+                  <p-badge value="Imported" severity="success" />
+                }
+              </div>
+            </td>
+            <td>
+              <span>{{ chat.phone || '—' }}</span>
+            </td>
+            <td>
+              @if (chat.username) {
+                <span>&#64;{{ chat.username }}</span>
+              } @else {
+                <span>—</span>
+              }
+            </td>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="4" class="import-empty text-center">
+              <i class="pi pi-inbox import-empty-icon block"></i>
+              @if (importSearchQuery.trim()) {
+                No contacts match your search.
+              } @else {
+                No Telegram contacts available for this account.
+              }
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+</p-dialog>

@@ -10,12 +10,14 @@ namespace TelegramEngine.Data
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<PcmcReminderConfig>().HasData(DataSeed.ReminderConfigs);
 
-            // Seed one global bill rule row.
-            modelBuilder.Entity<PcmcBillRule>().HasData(new PcmcBillRule
+            modelBuilder.Entity<PcmcUtilityConfig>()
+                .HasIndex(c => c.Name).IsUnique();
+
+            modelBuilder.Entity<PcmcUtilityConfig>().HasData(new PcmcUtilityConfig
             {
                 Id = 1,
-                PreparingDays = 5,
-                OverdueDays = 7,
+                Name = "bill_rule",
+                Value = "{\"preparingDays\":5,\"overdueDays\":7}",
                 UpdatedOn = new DateTime(2026, 6, 23, 0, 0, 0, DateTimeKind.Utc),
             });
 
@@ -48,7 +50,7 @@ namespace TelegramEngine.Data
         public DbSet<PcmcCustomerService> PcmcCustomerServices { get; set; }
         public DbSet<PcmcBill> PcmcBills { get; set; }
         public DbSet<PcmcReminderConfig> PcmcReminderConfigs { get; set; }
-        public DbSet<PcmcBillRule> PcmcBillRules { get; set; }
+        public DbSet<PcmcUtilityConfig> PcmcUtilityConfigs { get; set; }
         public DbSet<PcmcBillStatusLog> PcmcBillStatusLogs { get; set; }
 
     }

@@ -214,19 +214,18 @@ namespace Library.Models
     }
 
     /// <summary>
-    /// Global configuration for how bill statuses are computed.
-    /// Only one row should exist; use the default (PreparingDays=5, OverdueDays=7) when absent.
+    /// Generic key-value store for system configuration blobs.
+    /// Each row holds a JSON value identified by a unique name (e.g. "bill_rule").
     /// </summary>
-    public class PcmcBillRule
+    public class PcmcUtilityConfig
     {
         public int Id { get; set; }
 
-        /// <summary>Days before due date when the system begins the alerting phase.
-        /// Used by the automated sender to decide when to fire pre-due reminders.</summary>
-        public int PreparingDays { get; set; } = 5;
+        [Required, StringLength(100)]
+        public string Name { get; set; } = string.Empty;
 
-        /// <summary>Days after due date before status transitions to Overdue.</summary>
-        public int OverdueDays { get; set; } = 7;
+        [Required]
+        public string Value { get; set; } = string.Empty;
 
         public DateTime UpdatedOn { get; set; } = DateTime.UtcNow;
     }
